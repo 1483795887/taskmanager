@@ -11,3 +11,9 @@ CREATE TABLE event
   is_finished int,
   type int
 );
+
+insert into event (name, current_progress,
+                   target_progress, start_date,
+                   last_modified_date, is_closed,
+                   is_finished, type)
+    VALUES('test',0,100,'2018-06-12','2018-06-12',0,0,0);

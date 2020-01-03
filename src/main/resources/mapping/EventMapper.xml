@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cheng.taskmanager.mapper.EventMapper">
+
+    <resultMap type="event" id="EventInfo">
+        <result column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="current_progress" property="currentProgress"/>
+        <result column="target_progress" property="targetProgress"/>
+        <result column="start_date" property="startDate"/>
+        <result column="last_modified_date" property="lastModifiedDate"/>
+        <result column="is_closed" property="isClosed"/>
+        <result column="is_finished" property="isFinished"/>
+        <result column="type" property="type"/>
+    </resultMap>
+
+    <select id="findCurrentEvents" resultMap="EventInfo">
+        select *
+        from event
+    </select>
+</mapper>

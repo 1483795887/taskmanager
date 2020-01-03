@@ -7,6 +7,13 @@ import javax.validation.constraints.PositiveOrZero;
 import java.sql.Date;
 
 public class Event {
+
+    public final static int CLOSED = 1;
+    public final static int UNCLOSED = 0;
+    public final static int FINISHED = 1;
+    public final static int UNFINISHED = 0;
+    public final static int BOOK = 0;
+
     private int id;
     @NotNull
     @NotEmpty
