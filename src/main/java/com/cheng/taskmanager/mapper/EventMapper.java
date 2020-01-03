@@ -15,4 +15,6 @@ public interface EventMapper {
     int getFinishedEventCount();
 
     Event getEventById(int id);
+
+    void update(Event event);
 }

@@ -42,4 +42,10 @@
     <update id="finish" parameterType="Integer">
         update event set is_finished = true where id = #{id}
     </update>
+    <update id="update" parameterType="Event">
+        update event set name=#{name},current_progress=#{currentProgress},
+                         target_progress=#{targetProgress},start_date=#{startDate},
+                         last_modified_date=#{lastModifiedDate}
+          where id = #{id}
+    </update>
 </mapper>

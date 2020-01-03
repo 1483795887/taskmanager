@@ -13,6 +13,7 @@ import java.sql.Date;
 import java.text.SimpleDateFormat;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @RunWith(SpringRunner.class)
@@ -38,6 +39,7 @@ public class EventMapperTest {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-mm-dd");
         date = new Date(simpleDateFormat.parse("2019-12-29").getTime());
         eventToAdd.setStartDate(date);
+        eventToAdd.setLastModifiedDate(date);
     }
 
     @Test
@@ -108,5 +110,39 @@ public class EventMapperTest {
         mapper.addEvent(eventToAdd);
         Event event = mapper.getEventById(eventToAdd.getId());
         assertEquals(event.getName(), eventToAdd.getName());
+    }
+
+    @Test
+    @Transactional
+    public void shouldNewNameWhenChangeTName(){
+        String newName = "newName";
+
+        mapper.addEvent(eventToAdd);
+        eventToAdd.setName(newName);
+        mapper.update(eventToAdd);
+
+        assertEquals(newName, mapper.getEventById(eventToAdd.getId()).getName());
+    }
+
+    @Test(expected = NullPointerException.class)
+    @Transactional
+    public void shouldThrowNullPointerWhenUpdateNameWithoutId(){
+        String newName = "newName";
+
+        mapper.addEvent(eventToAdd);
+        eventToAdd.setName(newName);
+
+        Event event = new Event();
+        event.setName(eventToAdd.getName());
+        event.setCurrentProgress(eventToAdd.getCurrentProgress());
+        event.setTargetProgress(eventToAdd.getTargetProgress());
+        event.setIsFinished(eventToAdd.getIsFinished());
+        event.setIsClosed(eventToAdd.getIsClosed());
+        event.setStartDate(eventToAdd.getStartDate());
+        event.setLastModifiedDate(eventToAdd.getLastModifiedDate());
+        event.setType(eventToAdd.getType());
+        mapper.update(event);
+
+        assertNotEquals(newName, mapper.getEventById(0).getName());
     }
 }
