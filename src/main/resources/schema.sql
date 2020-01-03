@@ -1,5 +1,5 @@
-drop table task;
-CREATE TABLE task
+drop table event;
+CREATE TABLE event
 (
   id                 int PRIMARY KEY AUTO_INCREMENT,
   name               varchar(20),
