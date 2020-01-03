@@ -60,27 +60,53 @@ public class EventMapperTest {
     @Test
     @Transactional
     public void shouldCurrentEventCountDecOneWhenCloseEvent(){
-        int id = mapper.addEvent(eventToAdd);
+        mapper.addEvent(eventToAdd);
         int count = mapper.getCurrentEventCount();
-        mapper.close(id);
+        mapper.close(eventToAdd.getId());
         assertEquals(count - 1, mapper.getCurrentEventCount());
     }
 
     @Test
     @Transactional
     public void shouldClosedEventCountIncOneWhenCloseEvent(){
-        int id = mapper.addEvent(eventToAdd);
+        mapper.addEvent(eventToAdd);
         int count = mapper.getClosedEventCount();
-        mapper.close(id);
+        mapper.close(eventToAdd.getId());
         assertEquals(count + 1, mapper.getClosedEventCount());
     }
 
     @Test
     @Transactional
     public void shouldFinishedEventCountSameWhenCloseEvent(){
-        int id = mapper.addEvent(eventToAdd);
+        mapper.addEvent(eventToAdd);
         int count = mapper.getFinishedEventCount();
-        mapper.close(id);
+        mapper.close(eventToAdd.getId());
         assertEquals(count , mapper.getFinishedEventCount());
+    }
+
+    @Test
+    @Transactional
+    public void shouldCurrentEventCountDecOneWhenFinishEvent(){
+        mapper.addEvent(eventToAdd);
+        int count = mapper.getCurrentEventCount();
+        mapper.finish(eventToAdd.getId());
+        assertEquals(count - 1, mapper.getCurrentEventCount());
+    }
+
+    @Test
+    @Transactional
+    public void shouldFinishedEventCountIncOneWhenFinishEvent(){
+        mapper.addEvent(eventToAdd);
+        int count = mapper.getFinishedEventCount();
+        mapper.finish(eventToAdd.getId());
+        assertEquals(count + 1, mapper.getFinishedEventCount());
+    }
+
+    @Test
+    @Transactional
+    public void shouldNameSameWhenGetEventById(){
+        mapper.addEvent(eventToAdd);
+        Event event = mapper.getEventById(eventToAdd.getId());
+        assertEquals(event.getName(), eventToAdd.getName());
     }
 }

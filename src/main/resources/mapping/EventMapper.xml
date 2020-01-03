@@ -25,6 +25,9 @@
     <select id="getFinishedEventCount" resultType="Integer">
         select count(id) from event where is_finished = true
     </select>
+    <select id="getEventById" parameterType="Integer" resultType="Event">
+        select * from event where id=#{id}
+    </select>
 
     <insert id="addEvent" parameterType="Event" useGeneratedKeys="true" keyProperty="id">
         insert into event(name, current_progress, target_progress, start_date,
@@ -35,5 +38,8 @@
 
     <update id="close" parameterType="Integer">
         update event set is_closed = true where id = #{id}
+    </update>
+    <update id="finish" parameterType="Integer">
+        update event set is_finished = true where id = #{id}
     </update>
 </mapper>
