@@ -16,8 +16,24 @@
         <result column="type" property="type"/>
     </resultMap>
 
-    <select id="findCurrentEvents" resultMap="EventInfo">
-        select *
-        from event
+    <select id="getCurrentEventCount" resultType="Integer">
+        select count(id) from event where is_finished = false and is_closed = false
     </select>
+    <select id="getClosedEventCount" resultType="Integer">
+        select count(id) from event where is_closed = true
+    </select>
+    <select id="getFinishedEventCount" resultType="Integer">
+        select count(id) from event where is_finished = true
+    </select>
+
+    <insert id="addEvent" parameterType="Event" useGeneratedKeys="true" keyProperty="id">
+        insert into event(name, current_progress, target_progress, start_date,
+                          last_modified_date, is_closed, is_finished, type)
+          VALUES(#{name},#{currentProgress},#{targetProgress},#{startDate},#{lastModifiedDate},
+                      #{isClosed},#{isFinished},#{type})
+    </insert>
+
+    <update id="close" parameterType="Integer">
+        update event set is_closed = true where id = #{id}
+    </update>
 </mapper>

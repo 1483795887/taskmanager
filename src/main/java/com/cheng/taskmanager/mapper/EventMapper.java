@@ -7,5 +7,10 @@ import java.util.List;
 
 @Repository
 public interface EventMapper {
-    List<Event> findCurrentEvents();
+    int getCurrentEventCount();
+    int addEvent(Event event);
+    void close(int id);
+    int getClosedEventCount();
+    void finish(int id);
+    int getFinishedEventCount();
 }

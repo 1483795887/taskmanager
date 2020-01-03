@@ -7,11 +7,6 @@ import javax.validation.constraints.PositiveOrZero;
 import java.sql.Date;
 
 public class Event {
-
-    public final static int CLOSED = 1;
-    public final static int UNCLOSED = 0;
-    public final static int FINISHED = 1;
-    public final static int UNFINISHED = 0;
     public final static int BOOK = 0;
 
     private int id;
@@ -29,9 +24,9 @@ public class Event {
     @NotNull
     private Date lastModifiedDate;
     @NotNull
-    private Integer isClosed;
+    private Boolean isClosed;
     @NotNull
-    private Integer isFinished;
+    private Boolean isFinished;
     @NotNull
     private Integer type;
 
@@ -83,19 +78,19 @@ public class Event {
         this.lastModifiedDate = lastModifiedDate;
     }
 
-    public Integer getIsClosed() {
+    public Boolean getIsClosed() {
         return isClosed;
     }
 
-    public void setIsClosed(Integer isClosed) {
+    public void setIsClosed(Boolean isClosed) {
         this.isClosed = isClosed;
     }
 
-    public Integer getIsFinished() {
+    public Boolean getIsFinished() {
         return isFinished;
     }
 
-    public void setIsFinished(Integer isFinished) {
+    public void setIsFinished(Boolean isFinished) {
         this.isFinished = isFinished;
     }
 

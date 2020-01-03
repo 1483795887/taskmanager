@@ -7,13 +7,7 @@ CREATE TABLE event
   target_progress     int,
   start_date         date,
   last_modified_date date,
-  is_closed int,
-  is_finished int,
+  is_closed bit,
+  is_finished bit,
   type int
 );
-
-insert into event (name, current_progress,
-                   target_progress, start_date,
-                   last_modified_date, is_closed,
-                   is_finished, type)
-    VALUES('test',0,100,'2018-06-12','2018-06-12',0,0,0);
