@@ -14,7 +14,6 @@ import java.text.SimpleDateFormat;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -27,7 +26,7 @@ public class EventMapperTest {
     private Date date;
 
     @Before
-    public void setUp() throws Exception{
+    public void setUp() throws Exception {
         eventToAdd = new Event();
         eventToAdd.setCurrentProgress(0);
         eventToAdd.setTargetProgress(100);
@@ -44,7 +43,7 @@ public class EventMapperTest {
 
     @Test
     @Transactional
-    public void shouldCurrentEventCountIncWhenAddUnfinishedEvent(){
+    public void shouldCurrentEventCountIncWhenAddUnfinishedEvent() {
         int count = mapper.getCurrentEventCount();
         mapper.addEvent(eventToAdd);
         assertEquals(count + 1, mapper.getCurrentEventCount());
@@ -52,16 +51,16 @@ public class EventMapperTest {
 
     @Test
     @Transactional
-    public void shouldCurrentEventCountSameWhenAddFinishedEvent(){
+    public void shouldCurrentEventCountSameWhenAddFinishedEvent() {
         int count = mapper.getCurrentEventCount();
         eventToAdd.setIsFinished(true);
         mapper.addEvent(eventToAdd);
-        assertEquals(count , mapper.getCurrentEventCount());
+        assertEquals(count, mapper.getCurrentEventCount());
     }
 
     @Test
     @Transactional
-    public void shouldCurrentEventCountDecOneWhenCloseEvent(){
+    public void shouldCurrentEventCountDecOneWhenCloseEvent() {
         mapper.addEvent(eventToAdd);
         int count = mapper.getCurrentEventCount();
         mapper.close(eventToAdd.getId());
@@ -70,7 +69,7 @@ public class EventMapperTest {
 
     @Test
     @Transactional
-    public void shouldClosedEventCountIncOneWhenCloseEvent(){
+    public void shouldClosedEventCountIncOneWhenCloseEvent() {
         mapper.addEvent(eventToAdd);
         int count = mapper.getClosedEventCount();
         mapper.close(eventToAdd.getId());
@@ -79,16 +78,16 @@ public class EventMapperTest {
 
     @Test
     @Transactional
-    public void shouldFinishedEventCountSameWhenCloseEvent(){
+    public void shouldFinishedEventCountSameWhenCloseEvent() {
         mapper.addEvent(eventToAdd);
         int count = mapper.getFinishedEventCount();
         mapper.close(eventToAdd.getId());
-        assertEquals(count , mapper.getFinishedEventCount());
+        assertEquals(count, mapper.getFinishedEventCount());
     }
 
     @Test
     @Transactional
-    public void shouldCurrentEventCountDecOneWhenFinishEvent(){
+    public void shouldCurrentEventCountDecOneWhenFinishEvent() {
         mapper.addEvent(eventToAdd);
         int count = mapper.getCurrentEventCount();
         mapper.finish(eventToAdd.getId());
@@ -97,7 +96,7 @@ public class EventMapperTest {
 
     @Test
     @Transactional
-    public void shouldFinishedEventCountIncOneWhenFinishEvent(){
+    public void shouldFinishedEventCountIncOneWhenFinishEvent() {
         mapper.addEvent(eventToAdd);
         int count = mapper.getFinishedEventCount();
         mapper.finish(eventToAdd.getId());
@@ -106,7 +105,7 @@ public class EventMapperTest {
 
     @Test
     @Transactional
-    public void shouldNameSameWhenGetEventById(){
+    public void shouldNameSameWhenGetEventById() {
         mapper.addEvent(eventToAdd);
         Event event = mapper.getEventById(eventToAdd.getId());
         assertEquals(event.getName(), eventToAdd.getName());
@@ -114,7 +113,7 @@ public class EventMapperTest {
 
     @Test
     @Transactional
-    public void shouldNewNameWhenChangeTName(){
+    public void shouldNewNameWhenChangeTName() {
         String newName = "newName";
 
         mapper.addEvent(eventToAdd);
@@ -126,7 +125,7 @@ public class EventMapperTest {
 
     @Test(expected = NullPointerException.class)
     @Transactional
-    public void shouldThrowNullPointerWhenUpdateNameWithoutId(){
+    public void shouldThrowNullPointerWhenUpdateNameWithoutId() {
         String newName = "newName";
 
         mapper.addEvent(eventToAdd);
@@ -144,5 +143,48 @@ public class EventMapperTest {
         mapper.update(event);
 
         assertNotEquals(newName, mapper.getEventById(0).getName());
+    }
+
+    private void addEventsByType() {
+        for (int i = 0; i < 10; i++) {
+            eventToAdd.setIsFinished(false);
+            eventToAdd.setIsClosed(false);
+            mapper.addEvent(eventToAdd);
+
+            eventToAdd.setIsFinished(true);
+            mapper.addEvent(eventToAdd);
+
+            eventToAdd.setIsFinished(false);
+            eventToAdd.setIsClosed(true);
+            mapper.addEvent(eventToAdd);
+        }
+
+    }
+
+    @Test
+    @Transactional
+    public void shouldGetRightCountWhenGetCurrentEvents() {
+        int limit = 3;
+        int begin = mapper.getCurrentEventCount();
+        addEventsByType();
+        assertEquals(limit, mapper.getCurrentEvents(begin, limit).size());
+    }
+
+    @Test
+    @Transactional
+    public void shouldGetRightCountWhenGetClosedEvents() {
+        int limit = 10;
+        int begin = mapper.getCurrentEventCount();
+        addEventsByType();
+        assertEquals(limit, mapper.getCurrentEvents(begin, limit).size());
+    }
+
+    @Test
+    @Transactional
+    public void shouldGetRightCountWhenGetFinishedEvents() {
+        int limit = 11;
+        int begin = mapper.getCurrentEventCount();
+        addEventsByType();
+        assertEquals(10, mapper.getCurrentEvents(begin, limit).size());
     }
 }

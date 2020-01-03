@@ -17,35 +17,82 @@
     </resultMap>
 
     <select id="getCurrentEventCount" resultType="Integer">
-        select count(id) from event where is_finished = false and is_closed = false
+        select count(id)
+        from event
+        where is_finished = false
+          and is_closed = false
     </select>
     <select id="getClosedEventCount" resultType="Integer">
-        select count(id) from event where is_closed = true
+        select count(id)
+        from event
+        where is_closed = true
     </select>
     <select id="getFinishedEventCount" resultType="Integer">
-        select count(id) from event where is_finished = true
+        select count(id)
+        from event
+        where is_finished = true
+    </select>
+    <select id="getCurrentEvents" resultType="map">
+        select *
+        from event
+        where is_closed = false
+          and is_finished = false
+        limit #{begin},#{limit}
+    </select>
+    <select id="getFinishedEvents" resultType="map">
+        select *
+        from event
+        where is_finished = true
+        limit #{begin},#{limit}
+    </select>
+    <select id="getClosedEvents" resultType="map">
+        select *
+        from event
+        where is_closed = true
+        limit #{begin},#{limit}
     </select>
     <select id="getEventById" parameterType="Integer" resultType="Event">
-        select * from event where id=#{id}
+        select *
+        from event
+        where id = #{id}
     </select>
 
     <insert id="addEvent" parameterType="Event" useGeneratedKeys="true" keyProperty="id">
-        insert into event(name, current_progress, target_progress, start_date,
-                          last_modified_date, is_closed, is_finished, type)
-          VALUES(#{name},#{currentProgress},#{targetProgress},#{startDate},#{lastModifiedDate},
-                      #{isClosed},#{isFinished},#{type})
+        insert into event (name,
+                           current_progress,
+                           target_progress,
+                           start_date,
+                           last_modified_date,
+                           is_closed,
+                           is_finished,
+                           type)
+        VALUES (#{name},
+                #{currentProgress},
+                #{targetProgress},
+                #{startDate},
+                #{lastModifiedDate},
+                #{isClosed},
+                #{isFinished},
+                #{type})
     </insert>
 
     <update id="close" parameterType="Integer">
-        update event set is_closed = true where id = #{id}
+        update event
+        set is_closed = true
+        where id = #{id}
     </update>
     <update id="finish" parameterType="Integer">
-        update event set is_finished = true where id = #{id}
+        update event
+        set is_finished = true
+        where id = #{id}
     </update>
     <update id="update" parameterType="Event">
-        update event set name=#{name},current_progress=#{currentProgress},
-                         target_progress=#{targetProgress},start_date=#{startDate},
-                         last_modified_date=#{lastModifiedDate}
-          where id = #{id}
+        update event
+        set name               = #{name},
+            current_progress   = #{currentProgress},
+            target_progress    = #{targetProgress},
+            start_date         = #{startDate},
+            last_modified_date = #{lastModifiedDate}
+        where id = #{id}
     </update>
 </mapper>
