@@ -1,0 +1,15 @@
+server:
+  port: 8080
+
+spring:
+  datasource:
+    username: root
+    password: 1234
+    url: jdbc:mysql://localhost:3306/taskmanager
+    driver-class-name: com.mysql.jdbc.Driver
+    schema: classpath:schema.sql
+
+
+mybatis:
+  mapper-locations: classpath:mapping/*Mapper.xml
+  type-aliases-package: com.cheng.taskmanager.entity
