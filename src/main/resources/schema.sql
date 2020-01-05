@@ -1,3 +1,4 @@
+drop table if exists progress;
 drop table if exists event;
 CREATE TABLE event
 (
@@ -12,7 +13,6 @@ CREATE TABLE event
   type int
 );
 
-drop table if exists progress;
 CREATE TABLE progress
 (
   id int PRIMARY KEY AUTO_INCREMENT,

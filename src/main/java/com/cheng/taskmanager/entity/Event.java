@@ -9,7 +9,7 @@ import java.sql.Date;
 public class Event {
     public final static int BOOK = 0;
 
-    private int id;
+    private Integer id;
     @NotNull
     @NotEmpty
     private String name;
@@ -30,11 +30,11 @@ public class Event {
     @NotNull
     private Integer type;
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
