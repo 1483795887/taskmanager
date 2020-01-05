@@ -32,26 +32,26 @@
         from event
         where is_finished = true
     </select>
-    <select id="getCurrentEvents" resultType="map">
+    <select id="getCurrentEvents" resultMap="EventInfo">
         select *
         from event
         where is_closed = false
           and is_finished = false
         limit #{begin},#{limit}
     </select>
-    <select id="getFinishedEvents" resultType="map">
+    <select id="getFinishedEvents" resultMap="EventInfo">
         select *
         from event
         where is_finished = true
         limit #{begin},#{limit}
     </select>
-    <select id="getClosedEvents" resultType="map">
+    <select id="getClosedEvents" resultMap="EventInfo">
         select *
         from event
         where is_closed = true
         limit #{begin},#{limit}
     </select>
-    <select id="getEventById" parameterType="Integer" resultType="Event">
+    <select id="getEventById" parameterType="Integer" resultMap="EventInfo">
         select *
         from event
         where id = #{id}

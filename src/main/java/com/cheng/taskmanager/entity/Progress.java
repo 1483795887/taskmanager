@@ -5,6 +5,7 @@ import java.sql.Date;
 public class Progress {
     private Integer id;
     private Integer eid;
+    private Integer progress;
     private Date date;
 
     public Integer getId() {
@@ -21,6 +22,14 @@ public class Progress {
 
     public void setEid(Integer eid) {
         this.eid = eid;
+    }
+
+    public Integer getProgress() {
+        return progress;
+    }
+
+    public void setProgress(Integer progress) {
+        this.progress = progress;
     }
 
     public Date getDate() {

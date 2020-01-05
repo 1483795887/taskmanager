@@ -8,9 +8,9 @@ spring:
     url: jdbc:mysql://localhost:3306/taskmanager
     driver-class-name: com.mysql.jdbc.Driver
     schema:
-      - classpath:schema.sql
-      - classpath:data.sql
-      - classpath:update.sql
+    - classpath:schema.sql
+    - classpath:data.sql
+    - classpath:update.sql
     initialization-mode: always
 mybatis:
   mapper-locations: classpath:mapping/*Mapper.xml
