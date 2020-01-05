@@ -23,3 +23,21 @@ INSERT INTO `task` VALUES ('40', '68', '422', '2019-06-26', '2019-07-19', '任�
 INSERT INTO `task` VALUES ('41', '106', '846', '2019-06-26', '2019-07-07', '任务五');
 INSERT INTO `task` VALUES ('42', '13', '487', '2019-06-26', '2019-06-26', '任务六');
 INSERT INTO `task` VALUES ('43', '21', '743', '2019-06-27', '2019-06-27', '任务七');
+
+DROP TABLE IF EXISTS `diary`;
+CREATE TABLE `diary` (
+  `id` int(11) primary key auto_increment,
+  `title` varchar(50),
+  `date` date,
+  `text` varchar(200)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+-- Records of diary
+-- ----------------------------
+INSERT INTO `diary` (title, date, text) VALUES ('测试一', '2018-06-12', '测试一文本');
+INSERT INTO `diary` (title, date, text) VALUES ('测试二', '2018-06-12', '测试二文本');
+INSERT INTO `diary` (title, date, text) VALUES ('card', '2019-01-07', '');
+INSERT INTO `diary` (title, date, text)VALUES  ('card', '2019-01-13', '');
+INSERT INTO `diary` (title, date, text)VALUES  ('card', '2019-01-15', '');
+INSERT INTO `diary` (title, date, text)VALUES  ('card', '2019-01-20', '');

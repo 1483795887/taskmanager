@@ -5,3 +5,9 @@ insert into event (name, current_progress, target_progress, start_date,
 
 drop table if exists task;
 
+insert into progress(eid,progress,date)
+  select id,1,date
+  from diary
+  where title <> 'card';
+
+drop table diary;
