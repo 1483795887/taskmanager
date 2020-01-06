@@ -23,21 +23,24 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 public class ProgressMapperTest {
 
     private final static int NOT_EXIST_EVENT_ID = 10000;
+    private final static int EXIST_EVENT_ID = 1;
+    private final static int EVENT_WITH_PROGRESS = 8;
+    private final static int EVENT_WITH_PROGRESS_THE_COUNT = 1;
 
     @Autowired
    ProgressMapper mapper;
 
     @Test
     @Transactional
-    public void shouldNotNullWhenGetProgressesFromEventNotExist(){
+    public void shouldNotNullWhenGetFromEventNotExist(){
         List<Progress> progresses = mapper.getProgresses(NOT_EXIST_EVENT_ID);
         assertNotNull(progresses);
     }
 
     @Test
     @Transactional
-    public void shouldSizeZeroWhenGetProgressesFromEventNotExist(){
-        List<Progress> progresses = mapper.getProgresses(NOT_EXIST_EVENT_ID);
+    public void shouldSizeZeroWhenGetFromEventExistWithoutProgress(){
+        List<Progress> progresses = mapper.getProgresses(EXIST_EVENT_ID);
         assertEquals(0, progresses.size());
     }
 }
