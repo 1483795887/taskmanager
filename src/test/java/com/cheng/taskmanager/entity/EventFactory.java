@@ -34,7 +34,7 @@ public class EventFactory {
         eventToAdd.setName("test");
         Date date = null;
         try {
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-mm-dd");
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
             date = new Date(simpleDateFormat.parse("2019-12-29").getTime());
         } catch (Exception e) {
             e.printStackTrace();

@@ -187,7 +187,7 @@ public class EventMapperTest {
     private void addProgress(int eid, int p, String strDate){
         Date date = null;
         try {
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-mm-dd");
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
             date = new Date(simpleDateFormat.parse(strDate).getTime());
         } catch (Exception e) {
             e.printStackTrace();
@@ -211,5 +211,16 @@ public class EventMapperTest {
         event = mapper.getEventById(currentEvent.getId());
 
         assertEquals(count + 1, event.getProgressList().size());
+    }
+
+    @Test
+    @Transactional
+    public void shouldBeSameWhenAddAndGetProgress(){
+        String date = "2016-02-28";
+        mapper.addEvent(currentEvent);
+        addProgress(currentEvent.getId(), 10, date);
+        Event event = mapper.getEventById(currentEvent.getId());
+
+        assertEquals(date, event.getProgressList().get(0).getDate().toString());
     }
 }
