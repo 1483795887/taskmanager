@@ -2,6 +2,7 @@ package com.cheng.taskmanager.mapper;
 
 import com.cheng.taskmanager.entity.Event;
 import com.cheng.taskmanager.entity.EventFactory;
+import com.cheng.taskmanager.entity.Progress;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -9,6 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.sql.Date;
+import java.text.SimpleDateFormat;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -178,5 +182,34 @@ public class EventMapperTest {
     public void shouldListNotNullWhenGetByExistId(){
         Event event = mapper.getEventById(EXIST_EVENT_ID);
         assertNotNull(event.getProgressList());
+    }
+
+    private void addProgress(int eid, int p, String strDate){
+        Date date = null;
+        try {
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-mm-dd");
+            date = new Date(simpleDateFormat.parse(strDate).getTime());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        Progress progress = new Progress();
+        progress.setDate(date);
+        progress.setEid(eid);
+        progress.setProgress(p);
+        mapper.addProgress(progress);
+    }
+
+    @Test
+    @Transactional
+    public void shouldCountIncWhenAddProgress(){
+        mapper.addEvent(currentEvent);
+        Event event = mapper.getEventById(currentEvent.getId());
+        int count = event.getProgressList().size();
+
+        addProgress(event.getId(), 10, "2020-1-6");
+
+        event = mapper.getEventById(currentEvent.getId());
+
+        assertEquals(count + 1, event.getProgressList().size());
     }
 }

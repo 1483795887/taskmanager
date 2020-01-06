@@ -1,6 +1,7 @@
 package com.cheng.taskmanager.mapper;
 
 import com.cheng.taskmanager.entity.Event;
+import com.cheng.taskmanager.entity.Progress;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
@@ -11,6 +12,8 @@ public interface EventMapper {
     int getCurrentEventCount();
 
     void addEvent(Event event); //返回的id在event中
+
+    void addProgress(Progress progress);    //eid要实现写好
 
     void close(int id);
 
