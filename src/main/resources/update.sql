@@ -11,7 +11,14 @@ insert into event (name,
                    is_closed,
                    is_finished,
                    type)
-select name, current_progress, target_progress, last_modified_date, start_date, false, false, 0
+select name,
+       current_progress,
+       target_progress,
+       last_modified_date,
+       start_date,
+       false,
+       false,
+       0
 from task;
 
 insert into progress (eid, progress, date)
@@ -20,14 +27,15 @@ from event;
 
 insert into progress (eid, progress, date)
 select id, current_progress, last_modified_date
-from event;
+from event
+on duplicate key update progress = event.current_progress;
 
 drop table if exists task;
 
 alter table event
-    drop column current_progress;
+  drop column current_progress;
 alter table event
-    drop column last_modified_date;
+  drop column last_modified_date;
 
 insert into event (name, target_progress, start_date, is_closed, is_finished, type)
 select title, 1, date, false, true, 0

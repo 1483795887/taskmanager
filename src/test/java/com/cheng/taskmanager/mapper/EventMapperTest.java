@@ -4,6 +4,7 @@ import com.cheng.taskmanager.entity.DateFactory;
 import com.cheng.taskmanager.entity.Event;
 import com.cheng.taskmanager.entity.EventFactory;
 import com.cheng.taskmanager.entity.Progress;
+import org.apache.catalina.startup.AddPortOffsetRule;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -251,5 +252,18 @@ public class EventMapperTest {
         addProgress(currentEvent.getId(), 10, NEWER_DATE);
         Event event = mapper.getEventById(currentEvent.getId());
         assertEquals(NEWER_DATE, event.getProgressList().get(0).getDate().toString());
+    }
+
+    @Test
+    @Transactional
+    public void shouldGetLastAddWhenAddSomeInOneDay(){
+        mapper.addEvent(currentEvent);
+        int beforeP = 10;
+        int afterP = 20;
+        addProgress(currentEvent.getId(), beforeP, NEW_DATE);
+        addProgress(currentEvent.getId(),afterP, NEW_DATE);
+
+        Event event = mapper.getEventById(currentEvent.getId());
+        assertEquals(afterP, event.getProgressList().get(0).getProgress());
     }
 }
