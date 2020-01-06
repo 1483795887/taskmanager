@@ -12,8 +12,16 @@
         <result column="is_closed" property="isClosed"/>
         <result column="is_finished" property="isFinished"/>
         <result column="type" property="type"/>
+
+        <collection property="progressList" ofType="Progress"
+                    select="selectProgress" column="id"/>
     </resultMap>
 
+    <select id="selectProgress" resultType="Progress" parameterType="int">
+        select *
+        from progress
+        where eid = #{id}
+    </select>
     <select id="getCurrentEventCount" resultType="Integer">
         select count(id)
         from event
@@ -56,18 +64,8 @@
     </select>
 
     <insert id="addEvent" parameterType="Event" useGeneratedKeys="true" keyProperty="id">
-        insert into event (name,
-                           target_progress,
-                           start_date,
-                           is_closed,
-                           is_finished,
-                           type)
-        VALUES (#{name},
-                #{targetProgress},
-                #{startDate},
-                #{isClosed},
-                #{isFinished},
-                #{type})
+        insert into event (name, target_progress, start_date, is_closed, is_finished, type)
+        VALUES (#{name}, #{targetProgress}, #{startDate}, #{isClosed}, #{isFinished}, #{type})
     </insert>
 
     <update id="close" parameterType="Integer">
@@ -82,9 +80,9 @@
     </update>
     <update id="update" parameterType="Event">
         update event
-        set name               = #{name},
-            target_progress    = #{targetProgress},
-            start_date         = #{startDate}
+        set name            = #{name},
+            target_progress = #{targetProgress},
+            start_date      = #{startDate}
         where id = #{id}
     </update>
 </mapper>

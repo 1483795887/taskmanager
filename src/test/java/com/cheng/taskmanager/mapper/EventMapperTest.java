@@ -10,12 +10,14 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class EventMapperTest {
+
+    private final static int NOT_EXIST_EVENT_ID = 10000;
+    private final static int EXIST_EVENT_ID = 1;
 
     @Autowired
     EventMapper mapper;
@@ -150,17 +152,31 @@ public class EventMapperTest {
     @Transactional
     public void shouldGetRightCountWhenGetClosedEvents() {
         int limit = 10;
-        int begin = mapper.getCurrentEventCount();
+        int begin = mapper.getClosedEventCount();
         addEventsByType();
-        assertEquals(limit, mapper.getCurrentEvents(begin, limit).size());
+        assertEquals(limit, mapper.getClosedEvents(begin, limit).size());
     }
 
     @Test
     @Transactional
     public void shouldGetRightCountWhenGetFinishedEvents() {
         int limit = 11;
-        int begin = mapper.getCurrentEventCount();
+        int begin = mapper.getFinishedEventCount();
         addEventsByType();
-        assertEquals(10, mapper.getCurrentEvents(begin, limit).size());
+        assertEquals(10, mapper.getFinishedEvents(begin, limit).size());
+    }
+
+    @Test
+    @Transactional
+    public void shouldNullWhenGetByNotExistId(){
+        Event event = mapper.getEventById(NOT_EXIST_EVENT_ID);
+        assertNull(event);
+    }
+
+    @Test
+    @Transactional
+    public void shouldListNotNullWhenGetByExistId(){
+        Event event = mapper.getEventById(EXIST_EVENT_ID);
+        assertNotNull(event.getProgressList());
     }
 }

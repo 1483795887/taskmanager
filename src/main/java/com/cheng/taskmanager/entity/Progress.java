@@ -1,11 +1,19 @@
 package com.cheng.taskmanager.entity;
 
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.PastOrPresent;
+import javax.validation.constraints.PositiveOrZero;
 import java.sql.Date;
 
 public class Progress {
     private Integer id;
+    @NotNull
     private Integer eid;
+    @NotNull
+    @PositiveOrZero
     private Integer progress;
+    @NotNull
+    @PastOrPresent
     private Date date;
 
     public Integer getId() {

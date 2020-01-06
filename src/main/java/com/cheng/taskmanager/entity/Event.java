@@ -5,6 +5,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.PastOrPresent;
 import javax.validation.constraints.Positive;
 import java.sql.Date;
+import java.util.List;
 
 public class Event {
     public final static int BOOK = 0;
@@ -25,6 +26,7 @@ public class Event {
     private Boolean isFinished;
     @NotNull
     private Integer type;
+    private List<Progress> progressList;
 
     public Integer getId() {
         return id;
@@ -80,5 +82,13 @@ public class Event {
 
     public void setType(Integer type) {
         this.type = type;
+    }
+
+    public List<Progress> getProgressList() {
+        return progressList;
+    }
+
+    public void setProgressList(List<Progress> progressList) {
+        this.progressList = progressList;
     }
 }
