@@ -1,5 +1,6 @@
 package com.cheng.taskmanager.mapper;
 
+import com.cheng.taskmanager.entity.DateFactory;
 import com.cheng.taskmanager.entity.Event;
 import com.cheng.taskmanager.entity.EventFactory;
 import com.cheng.taskmanager.entity.Progress;
@@ -22,6 +23,9 @@ public class EventMapperTest {
 
     private final static int NOT_EXIST_EVENT_ID = 10000;
     private final static int EXIST_EVENT_ID = 1;
+    private final static String PAST_TIME = "2018-01-06";
+    private final static String NEW_DATE = "2019-01-06";
+    private final static String NEWER_DATE = "2020-01-06";
 
     @Autowired
     EventMapper mapper;
@@ -100,6 +104,17 @@ public class EventMapperTest {
 
     @Test
     @Transactional
+    public void shouldDateDefaultNowWhenNoDate(){
+        mapper.addEvent(currentEvent);
+        Event event = mapper.getEventById(currentEvent.getId());
+        java.util.Date date = new java.util.Date();
+        Date sqlDate = new Date(date.getTime());
+
+        assertEquals(sqlDate.toString(), event.getStartDate().toString());
+    }
+
+    @Test
+    @Transactional
     public void shouldNameSameWhenGetEventById() {
         mapper.addEvent(currentEvent);
         Event event = mapper.getEventById(currentEvent.getId());
@@ -118,6 +133,17 @@ public class EventMapperTest {
         assertEquals(newName, mapper.getEventById(currentEvent.getId()).getName());
     }
 
+    @Test
+    @Transactional
+    public void shouldNewDateWhenChangeDate(){
+        mapper.addEvent(currentEvent);
+        currentEvent.setStartDate(DateFactory.getDateFromString(NEW_DATE));
+        mapper.update(currentEvent);
+        Event event = mapper.getEventById(currentEvent.getId());
+
+        assertEquals(NEW_DATE, event.getStartDate().toString());
+    }
+
     @Test(expected = NullPointerException.class)
     @Transactional
     public void shouldThrowNullPointerWhenUpdateNameWithoutId() {
@@ -129,6 +155,7 @@ public class EventMapperTest {
         Event event = EventFactory.getCurrentEvent(Event.BOOK);
         event.setId(null);
         event.setName(newName);
+        event.setStartDate(DateFactory.getDateFromString(PAST_TIME));
         mapper.update(event);
 
         assertNotEquals(newName, mapper.getEventById(0).getName());
@@ -185,15 +212,8 @@ public class EventMapperTest {
     }
 
     private void addProgress(int eid, int p, String strDate){
-        Date date = null;
-        try {
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-            date = new Date(simpleDateFormat.parse(strDate).getTime());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
         Progress progress = new Progress();
-        progress.setDate(date);
+        progress.setDate(DateFactory.getDateFromString(strDate));
         progress.setEid(eid);
         progress.setProgress(p);
         mapper.addProgress(progress);
@@ -216,11 +236,20 @@ public class EventMapperTest {
     @Test
     @Transactional
     public void shouldBeSameWhenAddAndGetProgress(){
-        String date = "2016-02-28";
         mapper.addEvent(currentEvent);
-        addProgress(currentEvent.getId(), 10, date);
+        addProgress(currentEvent.getId(), 10, NEW_DATE);
         Event event = mapper.getEventById(currentEvent.getId());
 
-        assertEquals(date, event.getProgressList().get(0).getDate().toString());
+        assertEquals(NEW_DATE, event.getProgressList().get(0).getDate().toString());
+    }
+
+    @Test
+    @Transactional
+    public void shouldGetNearestInDateWhenGetTheFirstProgress(){
+        mapper.addEvent(currentEvent);
+        addProgress(currentEvent.getId(), 20, NEW_DATE);
+        addProgress(currentEvent.getId(), 10, NEWER_DATE);
+        Event event = mapper.getEventById(currentEvent.getId());
+        assertEquals(NEWER_DATE, event.getProgressList().get(0).getDate().toString());
     }
 }

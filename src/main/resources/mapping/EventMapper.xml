@@ -21,6 +21,7 @@
         select *
         from progress
         where eid = #{id}
+        order by date desc
     </select>
     <select id="getCurrentEventCount" resultType="Integer">
         select count(id)
@@ -64,8 +65,14 @@
     </select>
 
     <insert id="addEvent" parameterType="Event" useGeneratedKeys="true" keyProperty="id">
-        insert into event (name, target_progress, start_date, is_closed, is_finished, type)
-        VALUES (#{name}, #{targetProgress}, #{startDate}, #{isClosed}, #{isFinished}, #{type})
+        <if test="startDate != null">
+            insert into event (name, target_progress, start_date, is_closed, is_finished, type)
+            VALUES (#{name}, #{targetProgress}, #{startDate}, #{isClosed}, #{isFinished}, #{type})
+        </if>
+        <if test="startDate == null">
+            insert into event (name, target_progress, start_date, is_closed, is_finished, type)
+            VALUES (#{name}, #{targetProgress}, curdate(), #{isClosed}, #{isFinished}, #{type})
+        </if>
     </insert>
     <insert id="addProgress" parameterType="Progress" useGeneratedKeys="true" keyProperty="id">
         insert into progress (eid, progress, date)

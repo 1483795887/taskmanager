@@ -32,14 +32,6 @@ public class EventFactory {
         Event eventToAdd = new Event();
         eventToAdd.setTargetProgress(100);
         eventToAdd.setName("test");
-        Date date = null;
-        try {
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-            date = new Date(simpleDateFormat.parse("2019-12-29").getTime());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        eventToAdd.setStartDate(date);
 
         return eventToAdd;
     }
