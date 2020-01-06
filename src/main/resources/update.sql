@@ -1,29 +1,33 @@
-create table temptask (
-  id                 int primary key auto_increment,
-  current_progress   int,
-  target_progress    int,
-  start_date         date,
-  last_modified_date date
-);
+alter table event
+  add column current_progress int;
+alter table event
+  add column last_modified_date date;
 
-insert into temptask (current_progress, target_progress, start_date, last_modified_date)
-SELECT current_progress, target_progress, start_date, last_modified_date
-from task; #这里的id与event的id一一对应
-
-insert into event (name, target_progress, start_date, is_closed, is_finished, type)
-select name, target_progress, start_date, false, false, 0
+insert into event (name,
+                   current_progress,
+                   target_progress,
+                   start_date,
+                   event.last_modified_date,
+                   is_closed,
+                   is_finished,
+                   type)
+select name, current_progress, target_progress, last_modified_date, start_date, false, false, 0
 from task;
 
 insert into progress (eid, progress, date)
 select id, 0, start_date
-from temptask;
+from event;
 
 insert into progress (eid, progress, date)
 select id, current_progress, last_modified_date
-from temptask;
+from event;
 
 drop table if exists task;
-drop table if exists temptask;
+
+alter table event
+    drop column current_progress;
+alter table event
+    drop column last_modified_date;
 
 insert into event (name, target_progress, start_date, is_closed, is_finished, type)
 select title, 1, date, false, true, 0

@@ -2,8 +2,8 @@ package com.cheng.taskmanager.entity;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.PastOrPresent;
 import javax.validation.constraints.Positive;
-import javax.validation.constraints.PositiveOrZero;
 import java.sql.Date;
 
 public class Event {
@@ -14,15 +14,11 @@ public class Event {
     @NotEmpty
     private String name;
     @NotNull
-    @PositiveOrZero
-    private Integer currentProgress;
-    @NotNull
     @Positive
     private Integer targetProgress;
     @NotNull
+    @PastOrPresent
     private Date startDate;
-    @NotNull
-    private Date lastModifiedDate;
     @NotNull
     private Boolean isClosed;
     @NotNull
@@ -46,14 +42,6 @@ public class Event {
         this.name = name;
     }
 
-    public Integer getCurrentProgress() {
-        return currentProgress;
-    }
-
-    public void setCurrentProgress(Integer currentProgress) {
-        this.currentProgress = currentProgress;
-    }
-
     public Integer getTargetProgress() {
         return targetProgress;
     }
@@ -70,28 +58,20 @@ public class Event {
         this.startDate = startDate;
     }
 
-    public Date getLastModifiedDate() {
-        return lastModifiedDate;
-    }
-
-    public void setLastModifiedDate(Date lastModifiedDate) {
-        this.lastModifiedDate = lastModifiedDate;
-    }
-
-    public Boolean getIsClosed() {
+    public Boolean getClosed() {
         return isClosed;
     }
 
-    public void setIsClosed(Boolean isClosed) {
-        this.isClosed = isClosed;
+    public void setClosed(Boolean closed) {
+        isClosed = closed;
     }
 
-    public Boolean getIsFinished() {
+    public Boolean getFinished() {
         return isFinished;
     }
 
-    public void setIsFinished(Boolean isFinished) {
-        this.isFinished = isFinished;
+    public void setFinished(Boolean finished) {
+        isFinished = finished;
     }
 
     public Integer getType() {

@@ -7,30 +7,29 @@ public class EventFactory {
     public static Event getCurrentEvent(int type) {
         Event event = getBasicEvent();
         event.setType(type);
-        event.setIsFinished(false);
-        event.setIsClosed(false);
+        event.setFinished(false);
+        event.setClosed(false);
         return event;
     }
 
     public static Event getClosedEvent(int type) {
         Event event = getBasicEvent();
         event.setType(type);
-        event.setIsFinished(false);
-        event.setIsClosed(true);
+        event.setFinished(false);
+        event.setClosed(true);
         return event;
     }
 
     public static Event getFinishedEvent(int type) {
         Event event = getBasicEvent();
         event.setType(type);
-        event.setIsFinished(true);
-        event.setIsClosed(false);
+        event.setFinished(true);
+        event.setClosed(false);
         return event;
     }
 
     private static Event getBasicEvent() {
         Event eventToAdd = new Event();
-        eventToAdd.setCurrentProgress(0);
         eventToAdd.setTargetProgress(100);
         eventToAdd.setName("test");
         Date date = null;
@@ -41,7 +40,6 @@ public class EventFactory {
             e.printStackTrace();
         }
         eventToAdd.setStartDate(date);
-        eventToAdd.setLastModifiedDate(date);
 
         return eventToAdd;
     }

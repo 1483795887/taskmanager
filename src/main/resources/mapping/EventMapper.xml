@@ -7,10 +7,8 @@
     <resultMap type="event" id="EventInfo">
         <result column="id" property="id"/>
         <result column="name" property="name"/>
-        <result column="current_progress" property="currentProgress"/>
         <result column="target_progress" property="targetProgress"/>
         <result column="start_date" property="startDate"/>
-        <result column="last_modified_date" property="lastModifiedDate"/>
         <result column="is_closed" property="isClosed"/>
         <result column="is_finished" property="isFinished"/>
         <result column="type" property="type"/>
@@ -59,18 +57,14 @@
 
     <insert id="addEvent" parameterType="Event" useGeneratedKeys="true" keyProperty="id">
         insert into event (name,
-                           current_progress,
                            target_progress,
                            start_date,
-                           last_modified_date,
                            is_closed,
                            is_finished,
                            type)
         VALUES (#{name},
-                #{currentProgress},
                 #{targetProgress},
                 #{startDate},
-                #{lastModifiedDate},
                 #{isClosed},
                 #{isFinished},
                 #{type})
@@ -89,10 +83,8 @@
     <update id="update" parameterType="Event">
         update event
         set name               = #{name},
-            current_progress   = #{currentProgress},
             target_progress    = #{targetProgress},
-            start_date         = #{startDate},
-            last_modified_date = #{lastModifiedDate}
+            start_date         = #{startDate}
         where id = #{id}
     </update>
 </mapper>
