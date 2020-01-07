@@ -12,5 +12,6 @@
     <insert id="addReadRecord" parameterType="ReadRecord">
         insert into read_record (date, record)
         values (#{date}, #{record})
+        on duplicate key update record = values(record) + record
     </insert>
 </mapper>
