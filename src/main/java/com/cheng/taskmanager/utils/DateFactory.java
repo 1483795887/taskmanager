@@ -1,4 +1,4 @@
-package com.cheng.taskmanager.entity;
+package com.cheng.taskmanager.utils;
 
 import java.sql.Date;
 import java.text.SimpleDateFormat;
@@ -14,5 +14,10 @@ public class DateFactory {
         }
 
         return date;
+    }
+
+    public static Date getToday(){
+        java.util.Date today = new java.util.Date();
+        return new Date(today.getTime());
     }
 }

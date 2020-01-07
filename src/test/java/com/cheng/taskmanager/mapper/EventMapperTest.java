@@ -1,6 +1,6 @@
 package com.cheng.taskmanager.mapper;
 
-import com.cheng.taskmanager.entity.DateFactory;
+import com.cheng.taskmanager.utils.DateFactory;
 import com.cheng.taskmanager.entity.Event;
 import com.cheng.taskmanager.entity.EventFactory;
 import com.cheng.taskmanager.entity.Progress;
