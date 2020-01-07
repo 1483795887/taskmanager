@@ -28,4 +28,9 @@ public class EventServiceImpl implements EventService {
         progress.setDate(DateFactory.getToday());
         eventMapper.addProgress(progress);
     }
+
+    @Override
+    public void updateEvent(Event event) {
+        eventMapper.update(event);
+    }
 }
