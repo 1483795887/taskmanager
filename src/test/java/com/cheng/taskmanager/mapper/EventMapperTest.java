@@ -4,7 +4,6 @@ import com.cheng.taskmanager.entity.DateFactory;
 import com.cheng.taskmanager.entity.Event;
 import com.cheng.taskmanager.entity.EventFactory;
 import com.cheng.taskmanager.entity.Progress;
-import org.apache.catalina.startup.AddPortOffsetRule;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -14,7 +13,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Date;
-import java.text.SimpleDateFormat;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -105,7 +103,7 @@ public class EventMapperTest {
 
     @Test
     @Transactional
-    public void shouldDateDefaultNowWhenNoDate(){
+    public void shouldDateDefaultNowWhenNoDate() {
         mapper.addEvent(currentEvent);
         Event event = mapper.getEventById(currentEvent.getId());
         java.util.Date date = new java.util.Date();
@@ -136,7 +134,7 @@ public class EventMapperTest {
 
     @Test
     @Transactional
-    public void shouldNewDateWhenChangeDate(){
+    public void shouldNewDateWhenChangeDate() {
         mapper.addEvent(currentEvent);
         currentEvent.setStartDate(DateFactory.getDateFromString(NEW_DATE));
         mapper.update(currentEvent);
@@ -200,19 +198,19 @@ public class EventMapperTest {
 
     @Test
     @Transactional
-    public void shouldNullWhenGetByNotExistId(){
+    public void shouldNullWhenGetByNotExistId() {
         Event event = mapper.getEventById(NOT_EXIST_EVENT_ID);
         assertNull(event);
     }
 
     @Test
     @Transactional
-    public void shouldListNotNullWhenGetByExistId(){
+    public void shouldListNotNullWhenGetByExistId() {
         Event event = mapper.getEventById(EXIST_EVENT_ID);
         assertNotNull(event.getProgressList());
     }
 
-    private void addProgress(int eid, int p, String strDate){
+    private void addProgress(int eid, int p, String strDate) {
         Progress progress = new Progress();
         progress.setDate(DateFactory.getDateFromString(strDate));
         progress.setEid(eid);
@@ -222,7 +220,7 @@ public class EventMapperTest {
 
     @Test
     @Transactional
-    public void shouldCountIncWhenAddProgress(){
+    public void shouldCountIncWhenAddProgress() {
         mapper.addEvent(currentEvent);
         Event event = mapper.getEventById(currentEvent.getId());
         int count = event.getProgressList().size();
@@ -236,7 +234,7 @@ public class EventMapperTest {
 
     @Test
     @Transactional
-    public void shouldBeSameWhenAddAndGetProgress(){
+    public void shouldBeSameWhenAddAndGetProgress() {
         mapper.addEvent(currentEvent);
         addProgress(currentEvent.getId(), 10, NEW_DATE);
         Event event = mapper.getEventById(currentEvent.getId());
@@ -246,7 +244,7 @@ public class EventMapperTest {
 
     @Test
     @Transactional
-    public void shouldGetNearestInDateWhenGetTheFirstProgress(){
+    public void shouldGetNearestInDateWhenGetTheFirstProgress() {
         mapper.addEvent(currentEvent);
         addProgress(currentEvent.getId(), 20, NEW_DATE);
         addProgress(currentEvent.getId(), 10, NEWER_DATE);
@@ -256,12 +254,12 @@ public class EventMapperTest {
 
     @Test
     @Transactional
-    public void shouldGetLastAddWhenAddSomeInOneDay(){
+    public void shouldGetLastAddWhenAddSomeInOneDay() {
         mapper.addEvent(currentEvent);
         int beforeP = 10;
         int afterP = 20;
         addProgress(currentEvent.getId(), beforeP, NEW_DATE);
-        addProgress(currentEvent.getId(),afterP, NEW_DATE);
+        addProgress(currentEvent.getId(), afterP, NEW_DATE);
 
         Event event = mapper.getEventById(currentEvent.getId());
         assertEquals(afterP, event.getProgressList().get(0).getProgress());

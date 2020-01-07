@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cheng.taskmanager.mapper.ReadRecordMapper">
+    <select id="getReadRecords" resultType="ReadRecord">
+        select *
+        from read_record
+        where date between #{begin} and #{end}
+    </select>
+
+    <insert id="addReadRecord" parameterType="ReadRecord">
+        insert into read_record (date, record)
+        values (#{date}, #{record})
+    </insert>
+</mapper>
