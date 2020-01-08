@@ -49,6 +49,8 @@ public class EventServiceImpl implements EventService {
         Event event = eventMapper.getEventById(eid);
         if(!isEventRunning(event))
             return;
+        if(p >= event.getTargetProgress())
+            eventMapper.finish(eid);
         Progress progress = new Progress();
         progress.setDate(DateFactory.getToday());
         progress.setProgress(p);
