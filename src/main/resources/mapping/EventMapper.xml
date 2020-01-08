@@ -93,8 +93,7 @@
     <update id="update" parameterType="Event">
         update event
         set name            = #{name},
-            target_progress = #{targetProgress},
-            start_date      = #{startDate}
+            target_progress = #{targetProgress}
         where id = #{id}
     </update>
 </mapper>

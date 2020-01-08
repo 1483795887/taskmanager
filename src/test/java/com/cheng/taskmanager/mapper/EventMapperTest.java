@@ -134,13 +134,13 @@ public class EventMapperTest {
 
     @Test
     @Transactional
-    public void shouldNewDateWhenChangeDate() {
+    public void shouldNotChangeDateWhenChangeDate() {
         mapper.addEvent(currentEvent);
         currentEvent.setStartDate(DateFactory.getDateFromString(NEW_DATE));
         mapper.update(currentEvent);
         Event event = mapper.getEventById(currentEvent.getId());
 
-        assertEquals(NEW_DATE, event.getStartDate().toString());
+        assertNotEquals(NEW_DATE, event.getStartDate().toString());
     }
 
     @Test(expected = NullPointerException.class)
