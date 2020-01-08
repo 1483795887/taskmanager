@@ -112,7 +112,7 @@ public class EventServiceTest {
     @Test
     public void shouldNotDealWhenEventNotExist() {
         int np = 20;
-        event.setFinished(true);
+        event.setRunning(false);
         when(eventMapper.getEventById(TEST_EVENT_ID)).thenReturn(null);
         service.updateProgress(TEST_EVENT_ID, np);
     }
@@ -120,15 +120,7 @@ public class EventServiceTest {
     @Test
     public void shouldNotAddProgressWhenEventIsFinished() {
         int np = 20;
-        event.setFinished(true);
-        doThrow(new RuntimeException()).when(eventMapper).addProgress(any(Progress.class));
-        service.updateProgress(TEST_EVENT_ID, np);
-    }
-
-    @Test
-    public void shouldNotAddProgressWhenEventIsClosed() {
-        int np = 20;
-        event.setClosed(true);
+        event.setRunning(false);
         doThrow(new RuntimeException()).when(eventMapper).addProgress(any(Progress.class));
         service.updateProgress(TEST_EVENT_ID, np);
     }

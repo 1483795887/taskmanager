@@ -15,21 +15,11 @@ public interface EventMapper {
 
     void addProgress(Progress progress);    //eid要实现写好
 
-    void close(int id);
-
-    int getClosedEventCount();
-
     void finish(int id);
-
-    int getFinishedEventCount();
 
     Event getEventById(int id);
 
     void update(Event event);
 
-    List<Event> getCurrentEvents(@Param("begin") int begin, @Param("limit") int limit);
-
-    List<Event> getFinishedEvents(@Param("begin") int begin, @Param("limit") int limit);
-
-    List<Event> getClosedEvents(@Param("begin") int begin, @Param("limit") int limit);
+    List<Event> getCurrentEvents();
 }

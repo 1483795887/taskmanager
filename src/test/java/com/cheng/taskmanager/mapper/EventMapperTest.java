@@ -30,13 +30,11 @@ public class EventMapperTest {
     EventMapper mapper;
 
     private Event currentEvent;
-    private Event closedEvent;
     private Event finishedEvent;
 
     @Before
     public void setUp() {
         currentEvent = EventFactory.getCurrentEvent(Event.BOOK);
-        closedEvent = EventFactory.getClosedEvent(Event.BOOK);
         finishedEvent = EventFactory.getFinishedEvent(Event.BOOK);
     }
 
@@ -58,47 +56,11 @@ public class EventMapperTest {
 
     @Test
     @Transactional
-    public void shouldCurrentEventCountDecOneWhenCloseEvent() {
-        mapper.addEvent(currentEvent);
-        int count = mapper.getCurrentEventCount();
-        mapper.close(currentEvent.getId());
-        assertEquals(count - 1, mapper.getCurrentEventCount());
-    }
-
-    @Test
-    @Transactional
-    public void shouldClosedEventCountIncOneWhenCloseEvent() {
-        mapper.addEvent(currentEvent);
-        int count = mapper.getClosedEventCount();
-        mapper.close(currentEvent.getId());
-        assertEquals(count + 1, mapper.getClosedEventCount());
-    }
-
-    @Test
-    @Transactional
-    public void shouldFinishedEventCountSameWhenCloseEvent() {
-        mapper.addEvent(currentEvent);
-        int count = mapper.getFinishedEventCount();
-        mapper.close(currentEvent.getId());
-        assertEquals(count, mapper.getFinishedEventCount());
-    }
-
-    @Test
-    @Transactional
     public void shouldCurrentEventCountDecOneWhenFinishEvent() {
         mapper.addEvent(currentEvent);
         int count = mapper.getCurrentEventCount();
         mapper.finish(currentEvent.getId());
         assertEquals(count - 1, mapper.getCurrentEventCount());
-    }
-
-    @Test
-    @Transactional
-    public void shouldFinishedEventCountIncOneWhenFinishEvent() {
-        mapper.addEvent(currentEvent);
-        int count = mapper.getFinishedEventCount();
-        mapper.finish(currentEvent.getId());
-        assertEquals(count + 1, mapper.getFinishedEventCount());
     }
 
     @Test
@@ -122,7 +84,16 @@ public class EventMapperTest {
 
     @Test
     @Transactional
-    public void shouldNewNameWhenChangeTName() {
+    public void shouldNotRunningWhenFinishEvent(){
+        mapper.addEvent(currentEvent);
+        mapper.finish(currentEvent.getId());
+        Event event = mapper.getEventById(currentEvent.getId());
+        assertFalse(event.getRunning());
+    }
+
+    @Test
+    @Transactional
+    public void shouldNewNameWhenChangeName() {
         String newName = "newName";
 
         mapper.addEvent(currentEvent);
@@ -163,7 +134,6 @@ public class EventMapperTest {
     private void addEventsByType() {
         for (int i = 0; i < 10; i++) {
             mapper.addEvent(currentEvent);
-            mapper.addEvent(closedEvent);
             mapper.addEvent(finishedEvent);
         }
 
@@ -172,28 +142,8 @@ public class EventMapperTest {
     @Test
     @Transactional
     public void shouldGetRightCountWhenGetCurrentEvents() {
-        int limit = 3;
-        int begin = mapper.getCurrentEventCount();
         addEventsByType();
-        assertEquals(limit, mapper.getCurrentEvents(begin, limit).size());
-    }
-
-    @Test
-    @Transactional
-    public void shouldGetRightCountWhenGetClosedEvents() {
-        int limit = 10;
-        int begin = mapper.getClosedEventCount();
-        addEventsByType();
-        assertEquals(limit, mapper.getClosedEvents(begin, limit).size());
-    }
-
-    @Test
-    @Transactional
-    public void shouldGetRightCountWhenGetFinishedEvents() {
-        int limit = 11;
-        int begin = mapper.getFinishedEventCount();
-        addEventsByType();
-        assertEquals(10, mapper.getFinishedEvents(begin, limit).size());
+        assertEquals(mapper.getCurrentEventCount(), mapper.getCurrentEvents().size());
     }
 
     @Test

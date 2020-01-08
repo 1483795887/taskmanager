@@ -8,8 +8,7 @@ CREATE TABLE event
   name            varchar(20),
   target_progress int,
   start_date      date,
-  is_closed       bit,
-  is_finished     bit,
+  running         bit,
   type            int
 );
 
@@ -25,7 +24,7 @@ CREATE TABLE progress
 
 create table read_record
 (
-  date     date,
+  date   date,
   record int,
   unique key date_key(date)
 );

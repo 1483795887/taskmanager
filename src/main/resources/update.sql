@@ -3,22 +3,8 @@ alter table event
 alter table event
   add column last_modified_date date;
 
-insert into event (name,
-                   current_progress,
-                   target_progress,
-                   start_date,
-                   event.last_modified_date,
-                   is_closed,
-                   is_finished,
-                   type)
-select name,
-       current_progress,
-       target_progress,
-       last_modified_date,
-       start_date,
-       false,
-       false,
-       0
+insert into event (name, current_progress, target_progress, start_date, event.last_modified_date, running, type)
+select name, current_progress, target_progress, last_modified_date, start_date, true, 0
 from task;
 
 insert into progress (eid, progress, date)
@@ -37,14 +23,14 @@ alter table event
 alter table event
   drop column last_modified_date;
 
-insert into event (name, target_progress, start_date, is_closed, is_finished, type)
-select title, 1, date, false, true, 0
+insert into event (name, target_progress, start_date, running, type)
+select title, 1, date, false, 1
 from diary
 where title <> 'card';
 
 insert into progress (eid, progress, date)
 select id, target_progress, start_date
 from event
-where is_finished = true;
+where running = false;
 
 drop table diary;

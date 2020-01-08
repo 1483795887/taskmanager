@@ -9,8 +9,7 @@
         <result column="name" property="name"/>
         <result column="target_progress" property="targetProgress"/>
         <result column="start_date" property="startDate"/>
-        <result column="is_closed" property="isClosed"/>
-        <result column="is_finished" property="isFinished"/>
+        <result column="running" property="running"/>
         <result column="type" property="type"/>
 
         <collection property="progressList" ofType="Progress"
@@ -26,37 +25,12 @@
     <select id="getCurrentEventCount" resultType="Integer">
         select count(id)
         from event
-        where is_finished = false
-          and is_closed = false
-    </select>
-    <select id="getClosedEventCount" resultType="Integer">
-        select count(id)
-        from event
-        where is_closed = true
-    </select>
-    <select id="getFinishedEventCount" resultType="Integer">
-        select count(id)
-        from event
-        where is_finished = true
+        where running = true
     </select>
     <select id="getCurrentEvents" resultMap="EventInfo">
         select *
         from event
-        where is_closed = false
-          and is_finished = false
-        limit #{begin},#{limit}
-    </select>
-    <select id="getFinishedEvents" resultMap="EventInfo">
-        select *
-        from event
-        where is_finished = true
-        limit #{begin},#{limit}
-    </select>
-    <select id="getClosedEvents" resultMap="EventInfo">
-        select *
-        from event
-        where is_closed = true
-        limit #{begin},#{limit}
+        where running = true
     </select>
     <select id="getEventById" parameterType="Integer" resultMap="EventInfo">
         select *
@@ -66,12 +40,12 @@
 
     <insert id="addEvent" parameterType="Event" useGeneratedKeys="true" keyProperty="id">
         <if test="startDate != null">
-            insert into event (name, target_progress, start_date, is_closed, is_finished, type)
-            VALUES (#{name}, #{targetProgress}, #{startDate}, #{isClosed}, #{isFinished}, #{type})
+            insert into event (name, target_progress, start_date, running, type)
+            VALUES (#{name}, #{targetProgress}, #{startDate}, #{running}, #{type})
         </if>
         <if test="startDate == null">
-            insert into event (name, target_progress, start_date, is_closed, is_finished, type)
-            VALUES (#{name}, #{targetProgress}, curdate(), #{isClosed}, #{isFinished}, #{type})
+            insert into event (name, target_progress, start_date, running, type)
+            VALUES (#{name}, #{targetProgress}, curdate(), #{running}, #{type})
         </if>
     </insert>
     <insert id="addProgress" parameterType="Progress" useGeneratedKeys="true" keyProperty="id">
@@ -80,14 +54,9 @@
         on duplicate key update progress = #{progress}
     </insert>
 
-    <update id="close" parameterType="Integer">
-        update event
-        set is_closed = true
-        where id = #{id}
-    </update>
     <update id="finish" parameterType="Integer">
         update event
-        set is_finished = true
+        set running = false
         where id = #{id}
     </update>
     <update id="update" parameterType="Event">

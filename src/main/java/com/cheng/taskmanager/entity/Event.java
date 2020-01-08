@@ -22,9 +22,7 @@ public class Event {
     @PastOrPresent
     private Date startDate;
     @NotNull
-    private Boolean isClosed;
-    @NotNull
-    private Boolean isFinished;
+    private Boolean running;
     @NotNull
     private Integer type;
     private List<Progress> progressList;
@@ -61,20 +59,12 @@ public class Event {
         this.startDate = startDate;
     }
 
-    public Boolean getClosed() {
-        return isClosed;
+    public Boolean getRunning() {
+        return running;
     }
 
-    public void setClosed(Boolean closed) {
-        isClosed = closed;
-    }
-
-    public Boolean getFinished() {
-        return isFinished;
-    }
-
-    public void setFinished(Boolean finished) {
-        isFinished = finished;
+    public void setRunning(Boolean running) {
+        this.running = running;
     }
 
     public Integer getType() {

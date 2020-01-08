@@ -41,9 +41,7 @@ public class EventServiceImpl implements EventService {
     private boolean isEventRunning(Event event) {
         if (event == null)
             return false;
-        if (event.getClosed())
-            return false;
-        if (event.getFinished())
+        if (!event.getRunning())
             return false;
         return true;
     }

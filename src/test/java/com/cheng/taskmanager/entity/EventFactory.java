@@ -7,24 +7,14 @@ public class EventFactory {
     public static Event getCurrentEvent(int type) {
         Event event = getBasicEvent();
         event.setType(type);
-        event.setFinished(false);
-        event.setClosed(false);
-        return event;
-    }
-
-    public static Event getClosedEvent(int type) {
-        Event event = getBasicEvent();
-        event.setType(type);
-        event.setFinished(false);
-        event.setClosed(true);
+        event.setRunning(true);
         return event;
     }
 
     public static Event getFinishedEvent(int type) {
         Event event = getBasicEvent();
         event.setType(type);
-        event.setFinished(true);
-        event.setClosed(false);
+        event.setRunning(false);
         return event;
     }
 
