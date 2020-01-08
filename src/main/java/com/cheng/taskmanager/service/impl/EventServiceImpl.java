@@ -33,4 +33,14 @@ public class EventServiceImpl implements EventService {
     public void updateEvent(Event event) {
         eventMapper.update(event);
     }
+
+    @Override
+    public void updateProgress(int eid, int p) {
+        Progress progress = new Progress();
+        progress.setDate(DateFactory.getToday());
+        progress.setProgress(p);
+        progress.setEid(eid);
+
+        eventMapper.addProgress(progress);
+    }
 }
