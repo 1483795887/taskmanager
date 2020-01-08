@@ -21,6 +21,7 @@ import static org.mockito.Mockito.*;
 public class EventServiceTest {
 
     private final static int TEST_EVENT_ID = 1;
+    private final static int TARGET_PROGRESS = 100;
 
     private EventMapper eventMapper;
     private EventService service;
@@ -44,6 +45,7 @@ public class EventServiceTest {
 
         event.setStartDate(startDate);
         event.setId(TEST_EVENT_ID);
+        event.setTargetProgress(TARGET_PROGRESS);
         Progress progress = new Progress();
         progress.setDate(startDate);
         progress.setProgress(0);
@@ -51,6 +53,8 @@ public class EventServiceTest {
         List<Progress> progresses = new ArrayList<>();
         progresses.add(progress);
         event.setProgressList(progresses);
+
+        when(eventMapper.getEventById(TEST_EVENT_ID)).thenReturn(event);
     }
 
     @Test
@@ -91,11 +95,34 @@ public class EventServiceTest {
         Progress newProgress = new Progress();
         int np = 20;
         newProgress.setProgress(np);
-        when(eventMapper.getEventById(TEST_EVENT_ID)).thenReturn(event);
         service.updateProgress(TEST_EVENT_ID, np);
         verify(eventMapper).addProgress(progressArgumentCaptor.capture());
 
         Progress progress1 = progressArgumentCaptor.getValue();
         assertEquals(np, progress1.getProgress());
+    }
+
+    @Test
+    public void shouldNotDealWhenEventNotExist() {
+        int np = 20;
+        event.setFinished(true);
+        when(eventMapper.getEventById(TEST_EVENT_ID)).thenReturn(null);
+        service.updateProgress(TEST_EVENT_ID, np);
+    }
+
+    @Test
+    public void shouldNotAddProgressWhenEventIsFinished() {
+        int np = 20;
+        event.setFinished(true);
+        doThrow(new RuntimeException()).when(eventMapper).addProgress(any(Progress.class));
+        service.updateProgress(TEST_EVENT_ID, np);
+    }
+
+    @Test
+    public void shouldNotAddProgressWhenEventIsClosed() {
+        int np = 20;
+        event.setClosed(true);
+        doThrow(new RuntimeException()).when(eventMapper).addProgress(any(Progress.class));
+        service.updateProgress(TEST_EVENT_ID, np);
     }
 }

@@ -34,8 +34,21 @@ public class EventServiceImpl implements EventService {
         eventMapper.update(event);
     }
 
+    private boolean isEventRunning(Event event){
+        if(event == null)
+            return false;
+        if(event.getClosed())
+            return false;
+        if(event.getFinished())
+            return false;
+        return true;
+    }
+
     @Override
     public void updateProgress(int eid, int p) {
+        Event event = eventMapper.getEventById(eid);
+        if(!isEventRunning(event))
+            return;
         Progress progress = new Progress();
         progress.setDate(DateFactory.getToday());
         progress.setProgress(p);
