@@ -3,7 +3,9 @@ package com.cheng.taskmanager.service;
 import com.cheng.taskmanager.entity.Event;
 import com.cheng.taskmanager.entity.EventFactory;
 import com.cheng.taskmanager.entity.Progress;
+import com.cheng.taskmanager.entity.ReadRecord;
 import com.cheng.taskmanager.mapper.EventMapper;
+import com.cheng.taskmanager.mapper.ReadRecordMapper;
 import com.cheng.taskmanager.service.impl.EventServiceImpl;
 import com.cheng.taskmanager.utils.DateFactory;
 import org.junit.Before;
@@ -24,20 +26,24 @@ public class EventServiceTest {
     private final static int TARGET_PROGRESS = 100;
 
     private EventMapper eventMapper;
+    private ReadRecordMapper readRecordMapper;
     private EventService service;
     private Event event;
     private ArgumentCaptor<Event> eventArgumentCaptor;
     private ArgumentCaptor<Progress> progressArgumentCaptor;
+    private ArgumentCaptor<ReadRecord> readRecordArgumentCaptor;
     private Date today;
     private Date startDate;
 
     @Before
     public void setUp() {
         eventMapper = mock(EventMapper.class);
-        service = new EventServiceImpl(eventMapper);
+        readRecordMapper = mock(ReadRecordMapper.class);
+        service = new EventServiceImpl(eventMapper, readRecordMapper);
         event = EventFactory.getCurrentEvent(Event.BOOK);
         eventArgumentCaptor = ArgumentCaptor.forClass(Event.class);
         progressArgumentCaptor = ArgumentCaptor.forClass(Progress.class);
+        readRecordArgumentCaptor = ArgumentCaptor.forClass(ReadRecord.class);
 
         java.util.Date date = new java.util.Date();
         today = new Date(date.getTime());
@@ -127,20 +133,45 @@ public class EventServiceTest {
     }
 
     @Test
-    public void shouldCallFinishWhenUpdateExactlyFinished(){
+    public void shouldCallFinishWhenUpdateExactlyFinished() {
         service.updateProgress(TEST_EVENT_ID, TARGET_PROGRESS);
         verify(eventMapper).finish(TEST_EVENT_ID);
     }
 
     @Test
-    public void shouldCallFinishWhenUpdateMoreThanFinished(){
+    public void shouldCallFinishWhenUpdateMoreThanFinished() {
         service.updateProgress(TEST_EVENT_ID, TARGET_PROGRESS + 1);
         verify(eventMapper).finish(TEST_EVENT_ID);
     }
 
     @Test
-    public void shouldNotCallFinishWhenUpdateLessThanFinished(){
+    public void shouldNotCallFinishWhenUpdateLessThanFinished() {
         doThrow(new RuntimeException()).when(eventMapper).finish(TEST_EVENT_ID);
         service.updateProgress(TEST_EVENT_ID, TARGET_PROGRESS - 1);
+    }
+
+    @Test
+    public void shouldNotAddReadRecordWhenUpdateBookNotChange() {
+        int p = 10;
+        event.getProgressList().get(0).setDate(today);
+        event.getProgressList().get(0).setProgress(p);
+
+        doThrow(new RuntimeException()).when(readRecordMapper).addReadRecord(any(ReadRecord.class));
+
+        service.updateProgress(TEST_EVENT_ID, p);
+    }
+
+    @Test
+    public void shouldAddReadRecordWhenUpdateBook(){
+        int p = 10;
+        event.getProgressList().get(0).setProgress(p);
+        int np = 20;
+        service.updateProgress(TEST_EVENT_ID, np);
+
+        verify(readRecordMapper).addReadRecord(readRecordArgumentCaptor.capture());
+
+        ReadRecord readRecord = readRecordArgumentCaptor.getValue();
+        assertEquals(today.toString(), readRecord.getDate().toString());
+        assertEquals(np - p, readRecord.getRecord());
     }
 }

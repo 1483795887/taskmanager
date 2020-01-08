@@ -2,7 +2,9 @@ package com.cheng.taskmanager.service.impl;
 
 import com.cheng.taskmanager.entity.Event;
 import com.cheng.taskmanager.entity.Progress;
+import com.cheng.taskmanager.entity.ReadRecord;
 import com.cheng.taskmanager.mapper.EventMapper;
+import com.cheng.taskmanager.mapper.ReadRecordMapper;
 import com.cheng.taskmanager.service.EventService;
 import com.cheng.taskmanager.utils.DateFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,10 +14,12 @@ import org.springframework.stereotype.Service;
 public class EventServiceImpl implements EventService {
 
     private EventMapper eventMapper;
+    private ReadRecordMapper readRecordMapper;
 
     @Autowired
-    public EventServiceImpl(EventMapper eventMapper) {
+    public EventServiceImpl(EventMapper eventMapper, ReadRecordMapper readRecordMapper) {
         this.eventMapper = eventMapper;
+        this.readRecordMapper = readRecordMapper;
     }
 
     @Override
@@ -34,12 +38,12 @@ public class EventServiceImpl implements EventService {
         eventMapper.update(event);
     }
 
-    private boolean isEventRunning(Event event){
-        if(event == null)
+    private boolean isEventRunning(Event event) {
+        if (event == null)
             return false;
-        if(event.getClosed())
+        if (event.getClosed())
             return false;
-        if(event.getFinished())
+        if (event.getFinished())
             return false;
         return true;
     }
@@ -47,14 +51,22 @@ public class EventServiceImpl implements EventService {
     @Override
     public void updateProgress(int eid, int p) {
         Event event = eventMapper.getEventById(eid);
-        if(!isEventRunning(event))
+        if (!isEventRunning(event))
             return;
-        if(p >= event.getTargetProgress())
+        if (p >= event.getTargetProgress())
             eventMapper.finish(eid);
+        int currentProgress = event.getProgressList().get(0).getProgress();
+        if(currentProgress == p) //没有变动就不要添加了
+            return;
         Progress progress = new Progress();
         progress.setDate(DateFactory.getToday());
         progress.setProgress(p);
         progress.setEid(eid);
+
+        ReadRecord readRecord = new ReadRecord();
+        readRecord.setDate(DateFactory.getToday());
+        readRecord.setRecord(p - currentProgress);
+        readRecordMapper.addReadRecord(readRecord);
 
         eventMapper.addProgress(progress);
     }
