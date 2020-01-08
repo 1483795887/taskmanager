@@ -48,26 +48,46 @@ public class EventServiceImpl implements EventService {
         return true;
     }
 
+    private boolean isFinished(Event event, int p) {
+        return p >= event.getTargetProgress();
+    }
+
+    private void finish(Event event) {
+        eventMapper.finish(event.getId());
+    }
+
+    private void addProgress(Event event, int p) {
+        int eid = event.getId();
+        Progress progress = new Progress();
+        progress.setDate(DateFactory.getToday());
+        progress.setProgress(p);
+        progress.setEid(eid);
+        eventMapper.addProgress(progress);
+    }
+
+    private void addReadRecord(Event event, int cp, int p) {
+        if (event.getType() == Event.BOOK) {
+            ReadRecord readRecord = new ReadRecord();
+            readRecord.setDate(DateFactory.getToday());
+            readRecord.setRecord(p - cp);
+            readRecordMapper.addReadRecord(readRecord);
+        }
+    }
+
     @Override
     public void updateProgress(int eid, int p) {
         Event event = eventMapper.getEventById(eid);
         if (!isEventRunning(event))
             return;
-        if (p >= event.getTargetProgress())
-            eventMapper.finish(eid);
+        if (isFinished(event, p)) {
+            finish(event);
+            p = event.getTargetProgress();
+        }
+
         int currentProgress = event.getProgressList().get(0).getProgress();
-        if(currentProgress == p) //没有变动就不要添加了
+        if (currentProgress == p) //没有变动就不要添加了
             return;
-        Progress progress = new Progress();
-        progress.setDate(DateFactory.getToday());
-        progress.setProgress(p);
-        progress.setEid(eid);
-
-        ReadRecord readRecord = new ReadRecord();
-        readRecord.setDate(DateFactory.getToday());
-        readRecord.setRecord(p - currentProgress);
-        readRecordMapper.addReadRecord(readRecord);
-
-        eventMapper.addProgress(progress);
+        addProgress(event, p);
+        addReadRecord(event, currentProgress, p);
     }
 }

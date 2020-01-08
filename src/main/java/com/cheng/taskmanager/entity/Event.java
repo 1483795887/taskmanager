@@ -9,6 +9,7 @@ import java.util.List;
 
 public class Event {
     public final static int BOOK = 0;
+    public final static int TASK = 1;
 
     private Integer id;
     @NotNull

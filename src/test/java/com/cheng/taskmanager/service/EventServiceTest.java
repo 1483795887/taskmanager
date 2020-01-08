@@ -23,6 +23,7 @@ import static org.mockito.Mockito.*;
 public class EventServiceTest {
 
     private final static int TEST_EVENT_ID = 1;
+    private final static int START_PROGRESS = 10;
     private final static int TARGET_PROGRESS = 100;
 
     private EventMapper eventMapper;
@@ -54,7 +55,7 @@ public class EventServiceTest {
         event.setTargetProgress(TARGET_PROGRESS);
         Progress progress = new Progress();
         progress.setDate(startDate);
-        progress.setProgress(0);
+        progress.setProgress(START_PROGRESS);
         progress.setEid(TEST_EVENT_ID);
         List<Progress> progresses = new ArrayList<>();
         progresses.add(progress);
@@ -142,6 +143,9 @@ public class EventServiceTest {
     public void shouldCallFinishWhenUpdateMoreThanFinished() {
         service.updateProgress(TEST_EVENT_ID, TARGET_PROGRESS + 1);
         verify(eventMapper).finish(TEST_EVENT_ID);
+        verify(eventMapper).addProgress(progressArgumentCaptor.capture());
+        Progress progress = progressArgumentCaptor.getValue();
+        assertEquals(TARGET_PROGRESS, progress.getProgress());
     }
 
     @Test
@@ -152,19 +156,15 @@ public class EventServiceTest {
 
     @Test
     public void shouldNotAddReadRecordWhenUpdateBookNotChange() {
-        int p = 10;
         event.getProgressList().get(0).setDate(today);
-        event.getProgressList().get(0).setProgress(p);
 
         doThrow(new RuntimeException()).when(readRecordMapper).addReadRecord(any(ReadRecord.class));
 
-        service.updateProgress(TEST_EVENT_ID, p);
+        service.updateProgress(TEST_EVENT_ID, START_PROGRESS);
     }
 
     @Test
-    public void shouldAddReadRecordWhenUpdateBook(){
-        int p = 10;
-        event.getProgressList().get(0).setProgress(p);
+    public void shouldAddReadRecordWhenUpdateBook() {
         int np = 20;
         service.updateProgress(TEST_EVENT_ID, np);
 
@@ -172,6 +172,28 @@ public class EventServiceTest {
 
         ReadRecord readRecord = readRecordArgumentCaptor.getValue();
         assertEquals(today.toString(), readRecord.getDate().toString());
-        assertEquals(np - p, readRecord.getRecord());
+        assertEquals(np - START_PROGRESS, readRecord.getRecord());
+    }
+
+    @Test
+    public void shouldNotOverTheTargetWhenUpdateBookWhenOverFinish() {
+        int np = TARGET_PROGRESS + 1;
+        service.updateProgress(TEST_EVENT_ID, np);
+
+        verify(readRecordMapper).addReadRecord(readRecordArgumentCaptor.capture());
+
+        ReadRecord readRecord = readRecordArgumentCaptor.getValue();
+        assertEquals(today.toString(), readRecord.getDate().toString());
+        assertEquals(TARGET_PROGRESS - START_PROGRESS, readRecord.getRecord());
+
+    }
+
+    @Test
+    public void shouldNotAddReadRecordWhenUpdateNotBook() {
+        event.setType(Event.TASK);
+        doThrow(new RuntimeException()).when(readRecordMapper).addReadRecord(any(ReadRecord.class));
+
+        int np = 20;
+        service.updateProgress(TEST_EVENT_ID, np);
     }
 }
