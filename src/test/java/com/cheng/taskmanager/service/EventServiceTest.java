@@ -137,4 +137,10 @@ public class EventServiceTest {
         service.updateProgress(TEST_EVENT_ID, TARGET_PROGRESS + 1);
         verify(eventMapper).finish(TEST_EVENT_ID);
     }
+
+    @Test
+    public void shouldNotCallFinishWhenUpdateLessThanFinished(){
+        doThrow(new RuntimeException()).when(eventMapper).finish(TEST_EVENT_ID);
+        service.updateProgress(TEST_EVENT_ID, TARGET_PROGRESS - 1);
+    }
 }
