@@ -1,9 +1,9 @@
 package com.cheng.taskmanager.mapper;
 
-import com.cheng.taskmanager.utils.DateFactory;
 import com.cheng.taskmanager.entity.Event;
 import com.cheng.taskmanager.entity.EventFactory;
 import com.cheng.taskmanager.entity.Progress;
+import com.cheng.taskmanager.utils.DateFactory;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -84,7 +84,7 @@ public class EventMapperTest {
 
     @Test
     @Transactional
-    public void shouldNotRunningWhenFinishEvent(){
+    public void shouldNotRunningWhenFinishEvent() {
         mapper.addEvent(currentEvent);
         mapper.finish(currentEvent.getId());
         Event event = mapper.getEventById(currentEvent.getId());

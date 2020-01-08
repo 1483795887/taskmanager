@@ -1,8 +1,5 @@
 package com.cheng.taskmanager.entity;
 
-import java.sql.Date;
-import java.text.SimpleDateFormat;
-
 public class EventFactory {
     public static Event getCurrentEvent(int type) {
         Event event = getBasicEvent();

@@ -16,8 +16,7 @@ import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 public class EventServiceTest {
@@ -188,4 +187,25 @@ public class EventServiceTest {
         int np = 20;
         service.updateProgress(TEST_EVENT_ID, np);
     }
+
+    @Test
+    public void shouldCallGetEventWhenGetExistId() {
+        Event event = service.getEventById(TEST_EVENT_ID);
+        verify(eventMapper).getEventById(TEST_EVENT_ID);
+        assertNotNull(event);
+    }
+
+    @Test
+    public void shouldBeNullWhenGetNotExistId() {
+        Event event = service.getEventById(TEST_EVENT_ID + 1);
+        verify(eventMapper).getEventById(TEST_EVENT_ID + 1);
+        assertNull(event);
+    }
+
+    @Test
+    public void shouldCallGetCurrentEventsWhenGetCurrentEvents() {
+        service.getCurrentEvents();
+        verify(eventMapper).getCurrentEvents();
+    }
+
 }

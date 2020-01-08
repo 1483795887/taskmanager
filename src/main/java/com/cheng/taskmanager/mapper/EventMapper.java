@@ -2,7 +2,6 @@ package com.cheng.taskmanager.mapper;
 
 import com.cheng.taskmanager.entity.Event;
 import com.cheng.taskmanager.entity.Progress;
-import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;

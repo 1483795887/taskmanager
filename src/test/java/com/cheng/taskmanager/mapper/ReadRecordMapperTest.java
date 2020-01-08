@@ -1,7 +1,7 @@
 package com.cheng.taskmanager.mapper;
 
-import com.cheng.taskmanager.utils.DateFactory;
 import com.cheng.taskmanager.entity.ReadRecord;
+import com.cheng.taskmanager.utils.DateFactory;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
