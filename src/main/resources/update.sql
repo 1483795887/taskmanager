@@ -33,4 +33,9 @@ select id, target_progress, start_date
 from event
 where running = false;
 
+insert into achievement (eid, date)
+select id, start_date
+from event
+where running = false;
+
 drop table diary;
