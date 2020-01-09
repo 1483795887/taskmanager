@@ -5,6 +5,14 @@
 <mapper namespace="com.cheng.taskmanager.mapper.AchievementMapper">
     <select id="getAchievements" resultType="Achievement">
         select *
-        from read_record
+        from achievement
     </select>
+    <select id="getAchievementCount" resultType="int">
+        select count(*)
+        from achievement
+    </select>
+    <insert id="addAchievement" parameterType="Achievement">
+        insert into achievement (eid, date)
+        values (#{event.id}, #{date})
+    </insert>
 </mapper>
