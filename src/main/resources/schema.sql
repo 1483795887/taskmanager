@@ -31,8 +31,7 @@ create table read_record
 );
 
 create table achievement(
-  eid int,
+  eid int primary key ,
   date date,
-  unique key event_date(eid, date),
   constraint  achievement_event_id_fk foreign key (eid) references event (id)
 );
