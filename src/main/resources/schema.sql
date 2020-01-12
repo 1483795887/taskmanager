@@ -18,6 +18,7 @@ CREATE TABLE progress
   id       int primary key AUTO_INCREMENT,
   eid      int,
   progress int,
+  record   int,
   date     date,
   unique key eid_date_key (eid, date),
   CONSTRAINT progress_event_id_fk FOREIGN KEY (eid) REFERENCES event (id)
@@ -30,8 +31,8 @@ create table read_record
   unique key date_key(date)
 );
 
-create table achievement(
-  eid int primary key ,
+create table achievement (
+  eid  int primary key,
   date date,
-  constraint  achievement_event_id_fk foreign key (eid) references event (id)
+  constraint achievement_event_id_fk foreign key (eid) references event (id)
 );

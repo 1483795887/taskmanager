@@ -13,6 +13,9 @@ public class Progress {
     @PositiveOrZero
     private Integer progress;
     @NotNull
+    @PositiveOrZero
+    private Integer record;
+    @NotNull
     @PastOrPresent
     private Date date;
 
@@ -46,5 +49,13 @@ public class Progress {
 
     public void setDate(Date date) {
         this.date = date;
+    }
+
+    public Integer getRecord() {
+        return record;
+    }
+
+    public void setRecord(Integer record) {
+        this.record = record;
     }
 }

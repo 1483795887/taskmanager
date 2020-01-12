@@ -160,11 +160,12 @@ public class EventMapperTest {
         assertNotNull(event.getProgressList());
     }
 
-    private void addProgress(int eid, int p, String strDate) {
+    private void addProgress(int eid, int p, int r, String strDate) {
         Progress progress = new Progress();
         progress.setDate(DateFactory.getDateFromString(strDate));
         progress.setEid(eid);
         progress.setProgress(p);
+        progress.setRecord(r);
         mapper.addProgress(progress);
     }
 
@@ -175,7 +176,7 @@ public class EventMapperTest {
         Event event = mapper.getEventById(currentEvent.getId());
         int count = event.getProgressList().size();
 
-        addProgress(event.getId(), 10, "2020-1-6");
+        addProgress(event.getId(), 10, 10, "2020-1-6");
 
         event = mapper.getEventById(currentEvent.getId());
 
@@ -186,7 +187,7 @@ public class EventMapperTest {
     @Transactional
     public void shouldBeSameWhenAddAndGetProgress() {
         mapper.addEvent(currentEvent);
-        addProgress(currentEvent.getId(), 10, NEW_DATE);
+        addProgress(currentEvent.getId(), 10, 10, NEW_DATE);
         Event event = mapper.getEventById(currentEvent.getId());
 
         assertEquals(NEW_DATE, event.getProgressList().get(0).getDate().toString());
@@ -196,22 +197,25 @@ public class EventMapperTest {
     @Transactional
     public void shouldGetNearestInDateWhenGetTheFirstProgress() {
         mapper.addEvent(currentEvent);
-        addProgress(currentEvent.getId(), 20, NEW_DATE);
-        addProgress(currentEvent.getId(), 10, NEWER_DATE);
+        addProgress(currentEvent.getId(), 20, 20, NEW_DATE);
+        addProgress(currentEvent.getId(), 10, 10, NEWER_DATE);
         Event event = mapper.getEventById(currentEvent.getId());
         assertEquals(NEWER_DATE, event.getProgressList().get(0).getDate().toString());
     }
 
     @Test
     @Transactional
-    public void shouldGetLastAddWhenAddSomeInOneDay() {
+    public void shouldGetRightAddWhenAddSomeInOneDay() {
         mapper.addEvent(currentEvent);
         int beforeP = 10;
         int afterP = 20;
-        addProgress(currentEvent.getId(), beforeP, NEW_DATE);
-        addProgress(currentEvent.getId(), afterP, NEW_DATE);
+        int beforeR = 30;
+        int afterR = 40;
+        addProgress(currentEvent.getId(), beforeP, beforeR, NEW_DATE);
+        addProgress(currentEvent.getId(), afterP, afterR, NEW_DATE);
 
         Event event = mapper.getEventById(currentEvent.getId());
         assertEquals(afterP, event.getProgressList().get(0).getProgress());
+        assertEquals(afterR + beforeR, event.getProgressList().get(0).getRecord());
     }
 }

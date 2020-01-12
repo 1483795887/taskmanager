@@ -49,9 +49,10 @@
         </if>
     </insert>
     <insert id="addProgress" parameterType="Progress" useGeneratedKeys="true" keyProperty="id">
-        insert into progress (eid, progress, date)
-        values (#{eid}, #{progress}, #{date})
-        on duplicate key update progress = #{progress}
+        insert into progress (eid, progress, record, date)
+        values (#{eid}, #{progress}, #{record}, #{date})
+        on duplicate key update progress = #{progress},
+                                record   = values(record) + record
     </insert>
 
     <update id="finish" parameterType="Integer">
