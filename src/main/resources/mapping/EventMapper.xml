@@ -37,6 +37,11 @@
         from event
         where id = #{id}
     </select>
+    <select id="getProgresses" resultType="Progress">
+        select *
+        from progress
+        where date between #{startDate} and #{endDate}
+    </select>
 
     <insert id="addEvent" parameterType="Event" useGeneratedKeys="true" keyProperty="id">
         <if test="startDate != null">

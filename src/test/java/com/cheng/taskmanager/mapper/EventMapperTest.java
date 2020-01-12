@@ -22,20 +22,26 @@ public class EventMapperTest {
 
     private final static int NOT_EXIST_EVENT_ID = 10000;
     private final static int EXIST_EVENT_ID = 1;
-    private final static String PAST_TIME = "2018-01-06";
-    private final static String NEW_DATE = "2019-01-06";
-    private final static String NEWER_DATE = "2020-01-06";
 
     @Autowired
     EventMapper mapper;
 
     private Event currentEvent;
     private Event finishedEvent;
+    private Date oldday;
+    private Date middleday1;
+    private Date someday;
+    private Date today;
 
     @Before
     public void setUp() {
         currentEvent = EventFactory.getCurrentEvent(Event.BOOK);
         finishedEvent = EventFactory.getFinishedEvent(Event.BOOK);
+
+        oldday = DateFactory.getDateFromString("2020-01-05");
+        middleday1 = DateFactory.getDateFromString("2020-01-06");
+        someday = DateFactory.getDateFromString("2020-01-07");
+        today = DateFactory.getToday();
     }
 
     @Test
@@ -107,11 +113,11 @@ public class EventMapperTest {
     @Transactional
     public void shouldNotChangeDateWhenChangeDate() {
         mapper.addEvent(currentEvent);
-        currentEvent.setStartDate(DateFactory.getDateFromString(NEW_DATE));
+        currentEvent.setStartDate(someday);
         mapper.update(currentEvent);
         Event event = mapper.getEventById(currentEvent.getId());
 
-        assertNotEquals(NEW_DATE, event.getStartDate().toString());
+        assertNotEquals(someday.toString(), event.getStartDate().toString());
     }
 
     @Test(expected = NullPointerException.class)
@@ -125,7 +131,7 @@ public class EventMapperTest {
         Event event = EventFactory.getCurrentEvent(Event.BOOK);
         event.setId(null);
         event.setName(newName);
-        event.setStartDate(DateFactory.getDateFromString(PAST_TIME));
+        event.setStartDate(oldday);
         mapper.update(event);
 
         assertNotEquals(newName, mapper.getEventById(0).getName());
@@ -160,9 +166,9 @@ public class EventMapperTest {
         assertNotNull(event.getProgressList());
     }
 
-    private void addProgress(int eid, int p, int r, String strDate) {
+    private void addProgress(int eid, int p, int r, Date date) {
         Progress progress = new Progress();
-        progress.setDate(DateFactory.getDateFromString(strDate));
+        progress.setDate(date);
         progress.setEid(eid);
         progress.setProgress(p);
         progress.setRecord(r);
@@ -176,7 +182,7 @@ public class EventMapperTest {
         Event event = mapper.getEventById(currentEvent.getId());
         int count = event.getProgressList().size();
 
-        addProgress(event.getId(), 10, 10, "2020-1-6");
+        addProgress(event.getId(), 10, 10, someday);
 
         event = mapper.getEventById(currentEvent.getId());
 
@@ -187,20 +193,20 @@ public class EventMapperTest {
     @Transactional
     public void shouldBeSameWhenAddAndGetProgress() {
         mapper.addEvent(currentEvent);
-        addProgress(currentEvent.getId(), 10, 10, NEW_DATE);
+        addProgress(currentEvent.getId(), 10, 10, someday);
         Event event = mapper.getEventById(currentEvent.getId());
 
-        assertEquals(NEW_DATE, event.getProgressList().get(0).getDate().toString());
+        assertEquals(someday.toString(), event.getProgressList().get(0).getDate().toString());
     }
 
     @Test
     @Transactional
     public void shouldGetNearestInDateWhenGetTheFirstProgress() {
         mapper.addEvent(currentEvent);
-        addProgress(currentEvent.getId(), 20, 20, NEW_DATE);
-        addProgress(currentEvent.getId(), 10, 10, NEWER_DATE);
+        addProgress(currentEvent.getId(), 20, 20, someday);
+        addProgress(currentEvent.getId(), 10, 10, today);
         Event event = mapper.getEventById(currentEvent.getId());
-        assertEquals(NEWER_DATE, event.getProgressList().get(0).getDate().toString());
+        assertEquals(today.toString(), event.getProgressList().get(0).getDate().toString());
     }
 
     @Test
@@ -211,11 +217,64 @@ public class EventMapperTest {
         int afterP = 20;
         int beforeR = 30;
         int afterR = 40;
-        addProgress(currentEvent.getId(), beforeP, beforeR, NEW_DATE);
-        addProgress(currentEvent.getId(), afterP, afterR, NEW_DATE);
+        addProgress(currentEvent.getId(), beforeP, beforeR, someday);
+        addProgress(currentEvent.getId(), afterP, afterR, someday);
 
         Event event = mapper.getEventById(currentEvent.getId());
         assertEquals(afterP, event.getProgressList().get(0).getProgress());
         assertEquals(afterR + beforeR, event.getProgressList().get(0).getRecord());
+    }
+
+    @Test
+    @Transactional
+    public void shouldNotBeNullWhenGetProgresses() {
+        assertNotNull(mapper.getProgresses(today, today));
+    }
+
+    @Test
+    @Transactional
+    public void shouldSomeDayCountIncWhenAddProgress() {
+        mapper.addEvent(currentEvent);
+        int count = mapper.getProgresses(someday, someday).size();
+        addProgress(currentEvent.getId(), 10, 10, someday);
+        assertEquals(count + 1, mapper.getProgresses(someday, someday).size());
+    }
+
+    @Test
+    @Transactional
+    public void shouldNotCountIncWhenAddProgressNotInArea() {
+        mapper.addEvent(currentEvent);
+        int count = mapper.getProgresses(middleday1, someday).size();
+        addProgress(currentEvent.getId(), 10, 10, today);
+        assertEquals(count, mapper.getProgresses(middleday1, someday).size());
+    }
+
+    private void addTestProgresses() {
+        currentEvent.setStartDate(someday);
+        mapper.addEvent(currentEvent);
+        int oldEid = currentEvent.getId();
+        currentEvent.setStartDate(today);
+        mapper.addEvent(currentEvent);
+        int newEid = currentEvent.getId();
+        addProgress(oldEid, 10, 10, oldday);
+        addProgress(oldEid, 10, 10, someday);
+        addProgress(newEid, 10, 10, today);
+    }
+
+    @Test
+    @Transactional
+    public void shouldCountRightWhenBottomLimit() {
+        int count = mapper.getProgresses(someday, middleday1).size();
+        addTestProgresses();
+        assertEquals(count + 1, mapper.getProgresses(oldday, middleday1).size());
+    }
+
+    @Test
+    @Transactional
+    public void shouldCountRightWhenUpperLimit(){
+        int count = mapper.getProgresses(middleday1, today).size();
+        addTestProgresses();
+        assertEquals(count + 2, mapper.getProgresses(middleday1, today).size());
+
     }
 }

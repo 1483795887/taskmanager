@@ -8,8 +8,11 @@ import java.sql.Date;
 import java.util.List;
 
 public class Event {
-    public final static int BOOK = 0;
-    public final static int TASK = 1;
+    public final static int All = 0;
+    public final static int BOOK = 1;
+    public final static int ANIM = 2;
+    public final static int OTHER = 3;
+    public final static int CARD = 1000;
 
     private Integer id;
     @NotNull

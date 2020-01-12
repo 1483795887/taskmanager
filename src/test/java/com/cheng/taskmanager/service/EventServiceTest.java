@@ -181,7 +181,7 @@ public class EventServiceTest {
 
     @Test
     public void shouldNotAddReadRecordWhenUpdateNotBook() {
-        event.setType(Event.TASK);
+        event.setType(Event.ANIM);
         doThrow(new RuntimeException()).when(readRecordMapper).addReadRecord(any(ReadRecord.class));
 
         int np = 20;
