@@ -8,7 +8,6 @@
         from achievement
         where date between #{startDate} and #{endDate}
         order by date asc
-        limit #{begin},#{limit}
     </select>
     <select id="getAchievementCount" resultType="int">
         select count(*)

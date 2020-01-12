@@ -10,9 +10,7 @@ import java.util.List;
 @Repository
 public interface AchievementMapper {
     List<Achievement> getAchievements(@Param("startDate") Date startDate,
-                                      @Param("endDate") Date endDate,
-                                      @Param("begin") int begin,
-                                      @Param("limit") int limit);
+                                      @Param("endDate") Date endDate);
     void addAchievement(Achievement achievement);
     int getAchievementCount(@Param("startDate")Date startDate,
                             @Param("endDate")Date endDate);
