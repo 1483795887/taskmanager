@@ -16,12 +16,10 @@ import java.util.List;
 public class EventServiceImpl implements EventService {
 
     private EventMapper eventMapper;
-    private ReadRecordMapper readRecordMapper;
 
     @Autowired
-    public EventServiceImpl(EventMapper eventMapper, ReadRecordMapper readRecordMapper) {
+    public EventServiceImpl(EventMapper eventMapper) {
         this.eventMapper = eventMapper;
-        this.readRecordMapper = readRecordMapper;
     }
 
     @Override
@@ -32,6 +30,7 @@ public class EventServiceImpl implements EventService {
         progress.setProgress(0);
         progress.setEid(event.getId());
         progress.setDate(DateFactory.getToday());
+        progress.setRecord(0);
         eventMapper.addProgress(progress);
     }
 
@@ -56,22 +55,14 @@ public class EventServiceImpl implements EventService {
         eventMapper.finish(event.getId());
     }
 
-    private void addProgress(Event event, int p) {
+    private void addProgress(Event event, int p, int r) {
         int eid = event.getId();
         Progress progress = new Progress();
         progress.setDate(DateFactory.getToday());
         progress.setProgress(p);
+        progress.setRecord(r);
         progress.setEid(eid);
         eventMapper.addProgress(progress);
-    }
-
-    private void addReadRecord(Event event, int cp, int p) {
-        if (event.getType() == Event.BOOK) {
-            ReadRecord readRecord = new ReadRecord();
-            readRecord.setDate(DateFactory.getToday());
-            readRecord.setRecord(p - cp);
-            readRecordMapper.addReadRecord(readRecord);
-        }
     }
 
     @Override
@@ -87,8 +78,8 @@ public class EventServiceImpl implements EventService {
         int currentProgress = event.getProgressList().get(0).getProgress();
         if (currentProgress == p) //没有变动就不要添加了
             return;
-        addProgress(event, p);
-        addReadRecord(event, currentProgress, p);
+        int r = p - currentProgress;
+        addProgress(event, p, r);
     }
 
     @Override
