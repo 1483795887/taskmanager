@@ -16,7 +16,7 @@
     </select>
     <insert id="addAchievement" parameterType="Achievement">
         insert into achievement (eid, date)
-        values (#{event.id}, #{date})
+        values (#{eid}, #{date})
         on duplicate key update eid = values(eid)
     </insert>
 </mapper>

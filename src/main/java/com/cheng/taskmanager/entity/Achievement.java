@@ -3,15 +3,15 @@ package com.cheng.taskmanager.entity;
 import java.sql.Date;
 
 public class Achievement {
-    private Event event;
+    private int eid;
     private Date date;
 
-    public Event getEvent() {
-        return event;
+    public int getEid() {
+        return eid;
     }
 
-    public void setEvent(Event event) {
-        this.event = event;
+    public void setEid(int eid) {
+        this.eid = eid;
     }
 
     public Date getDate() {

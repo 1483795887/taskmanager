@@ -32,18 +32,22 @@ public class AchievementMapperTest {
     private Date someday;
     private Date today;
 
-    private Event event;
-
     @Before
     public void setUp() {
         oldday = DateFactory.getDateFromString("2020-01-05");
         middleday1 = DateFactory.getDateFromString("2020-01-06");
         someday = DateFactory.getDateFromString("2020-01-07");
         today = DateFactory.getToday();
+    }
 
-        event = EventFactory.getFinishedEvent(Event.BOOK);
-        event.setStartDate(someday);
+    private Achievement addAchievement(Date date) {
+        Event event = EventFactory.getFinishedEvent(Event.BOOK);
         eventMapper.addEvent(event);
+        Achievement achievement = new Achievement();
+        achievement.setDate(date);
+        achievement.setEid(event.getId());
+        mapper.addAchievement(achievement);
+        return achievement;
     }
 
     @Test
@@ -56,21 +60,11 @@ public class AchievementMapperTest {
     @Transactional
     public void shouldCountIncWhenAddAchievement() {
         int count = mapper.getAchievementCount(someday, someday);
-        Achievement achievement = new Achievement();
-        achievement.setEvent(event);
-        achievement.setDate(someday);
-        mapper.addAchievement(achievement);
+        addAchievement(someday);
         assertEquals(count + 1, mapper.getAchievementCount(someday, someday));
     }
 
-    private void addAchievement(Date date) {
-        Event event = EventFactory.getFinishedEvent(Event.BOOK);
-        eventMapper.addEvent(event);
-        Achievement achievement = new Achievement();
-        achievement.setDate(date);
-        achievement.setEvent(event);
-        mapper.addAchievement(achievement);
-    }
+
 
     private void addTestDateDates() {
         addAchievement(oldday);
@@ -108,10 +102,7 @@ public class AchievementMapperTest {
     @Test
     @Transactional
     public void shouldAddWhenThisEventIsAdded() {
-        Achievement achievement = new Achievement();
-        achievement.setDate(someday);
-        achievement.setEvent(event);
-        mapper.addAchievement(achievement);
+        Achievement achievement = addAchievement(someday);
         int count = mapper.getAchievementCount(someday, today);
         achievement.setDate(today);
         mapper.addAchievement(achievement);
