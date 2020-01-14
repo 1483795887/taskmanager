@@ -1,15 +1,16 @@
 package com.cheng.taskmanager.service;
 
+import com.cheng.taskmanager.entity.Achievement;
 import com.cheng.taskmanager.entity.Event;
 import com.cheng.taskmanager.entity.EventFactory;
 import com.cheng.taskmanager.entity.Progress;
+import com.cheng.taskmanager.mapper.AchievementMapper;
 import com.cheng.taskmanager.mapper.EventMapper;
 import com.cheng.taskmanager.service.impl.EventServiceImpl;
 import com.cheng.taskmanager.utils.DateFactory;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Date;
 import java.util.ArrayList;
@@ -26,14 +27,16 @@ public class EventServiceTest {
     private final static int TARGET_PROGRESS = 100;
 
     private EventMapper eventMapper;
+    private AchievementMapper achievementMapper;
     private EventService service;
     private Event event;
     private ArgumentCaptor<Event> eventArgumentCaptor;
     private ArgumentCaptor<Progress> progressArgumentCaptor;
+    private ArgumentCaptor<Achievement> achievementArgumentCaptor;
     private Date today;
     private Date startDate;
 
-    private void addProgress(Event event, int p, int r, Date date){
+    private void addProgress(Event event, int p, int r, Date date) {
         Progress progress = new Progress();
         progress.setRecord(r);
         progress.setDate(date);
@@ -48,13 +51,14 @@ public class EventServiceTest {
     @Before
     public void setUp() {
         eventMapper = mock(EventMapper.class);
-        service = new EventServiceImpl(eventMapper);
+        achievementMapper = mock(AchievementMapper.class);
+        service = new EventServiceImpl(eventMapper, achievementMapper);
         event = EventFactory.getCurrentEvent(Event.BOOK);
         eventArgumentCaptor = ArgumentCaptor.forClass(Event.class);
         progressArgumentCaptor = ArgumentCaptor.forClass(Progress.class);
+        achievementArgumentCaptor = ArgumentCaptor.forClass(Achievement.class);
 
-        java.util.Date date = new java.util.Date();
-        today = new Date(date.getTime());
+        today = DateFactory.getToday();
         startDate = DateFactory.getDateFromString("2020-01-06");
 
         event.setStartDate(startDate);
@@ -65,7 +69,7 @@ public class EventServiceTest {
         event.setProgressList(progresses);
 
         addProgress(event, START_PROGRESS, START_PROGRESS, startDate);
-        addProgress(event, MIDDLE_PROGRESS,MIDDLE_PROGRESS - START_PROGRESS, today);
+        addProgress(event, MIDDLE_PROGRESS, MIDDLE_PROGRESS - START_PROGRESS, today);
 
         when(eventMapper.getEventById(TEST_EVENT_ID)).thenReturn(event);
     }
@@ -138,6 +142,11 @@ public class EventServiceTest {
     public void shouldCallFinishWhenUpdateExactlyFinished() {
         service.updateProgress(TEST_EVENT_ID, TARGET_PROGRESS);
         verify(eventMapper).finish(TEST_EVENT_ID);
+        verify(achievementMapper).addAchievement(achievementArgumentCaptor.capture());
+
+        Achievement achievement = achievementArgumentCaptor.getValue();
+        assertEquals(achievement.getDate(), today);
+        assertEquals(achievement.getEid(), TEST_EVENT_ID);
     }
 
     @Test
@@ -145,13 +154,20 @@ public class EventServiceTest {
         service.updateProgress(TEST_EVENT_ID, TARGET_PROGRESS + 1);
         verify(eventMapper).finish(TEST_EVENT_ID);
         verify(eventMapper).addProgress(progressArgumentCaptor.capture());
+        verify(achievementMapper).addAchievement(achievementArgumentCaptor.capture());
+
         Progress progress = progressArgumentCaptor.getValue();
         assertEquals(TARGET_PROGRESS, progress.getProgress());
         assertEquals(TARGET_PROGRESS - MIDDLE_PROGRESS, progress.getRecord());
+
+        Achievement achievement = achievementArgumentCaptor.getValue();
+
+        assertEquals(achievement.getDate(), today);
+        assertEquals(achievement.getEid(), TEST_EVENT_ID);
     }
 
     @Test
-    public void shouldRecordRightWhenAddTwoProgressOnday(){
+    public void shouldRecordRightWhenAddTwoProgressOneDay() {
         int p = 16;
         int np = 20;
         service.updateProgress(TEST_EVENT_ID, p);
@@ -166,6 +182,7 @@ public class EventServiceTest {
     @Test
     public void shouldNotCallFinishWhenUpdateLessThanFinished() {
         doThrow(new RuntimeException()).when(eventMapper).finish(TEST_EVENT_ID);
+        doThrow(new RuntimeException()).when(achievementMapper).addAchievement(any(Achievement.class));
         service.updateProgress(TEST_EVENT_ID, TARGET_PROGRESS - 1);
     }
 

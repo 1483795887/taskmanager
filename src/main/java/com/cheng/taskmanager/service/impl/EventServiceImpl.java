@@ -1,10 +1,10 @@
 package com.cheng.taskmanager.service.impl;
 
+import com.cheng.taskmanager.entity.Achievement;
 import com.cheng.taskmanager.entity.Event;
 import com.cheng.taskmanager.entity.Progress;
-import com.cheng.taskmanager.entity.ReadRecord;
+import com.cheng.taskmanager.mapper.AchievementMapper;
 import com.cheng.taskmanager.mapper.EventMapper;
-import com.cheng.taskmanager.mapper.ReadRecordMapper;
 import com.cheng.taskmanager.service.EventService;
 import com.cheng.taskmanager.utils.DateFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,10 +16,12 @@ import java.util.List;
 public class EventServiceImpl implements EventService {
 
     private EventMapper eventMapper;
+    private AchievementMapper achievementMapper;
 
     @Autowired
-    public EventServiceImpl(EventMapper eventMapper) {
+    public EventServiceImpl(EventMapper eventMapper, AchievementMapper achievementMapper) {
         this.eventMapper = eventMapper;
+        this.achievementMapper = achievementMapper;
     }
 
     @Override
@@ -53,6 +55,10 @@ public class EventServiceImpl implements EventService {
 
     private void finish(Event event) {
         eventMapper.finish(event.getId());
+        Achievement achievement = new Achievement();
+        achievement.setEid(event.getId());
+        achievement.setDate(DateFactory.getToday());
+        achievementMapper.addAchievement(achievement);
     }
 
     private void addProgress(Event event, int p, int r) {
