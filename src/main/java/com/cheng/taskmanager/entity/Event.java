@@ -21,10 +21,7 @@ public class Event {
     @NotNull
     @Positive
     private Integer targetProgress;
-    @NotNull
-    @PastOrPresent
     private Date startDate;
-    @NotNull
     private Boolean running;
     @NotNull
     private Integer type;

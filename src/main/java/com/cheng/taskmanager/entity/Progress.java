@@ -7,16 +7,9 @@ import java.sql.Date;
 
 public class Progress {
     private Integer id;
-    @NotNull
     private Integer eid;
-    @NotNull
-    @PositiveOrZero
     private Integer progress;
-    @NotNull
-    @PositiveOrZero
     private Integer record;
-    @NotNull
-    @PastOrPresent
     private Date date;
 
     public Integer getId() {

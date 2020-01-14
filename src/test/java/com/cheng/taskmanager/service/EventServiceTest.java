@@ -1,5 +1,6 @@
 package com.cheng.taskmanager.service;
 
+import com.cheng.taskmanager.bean.EventInfo;
 import com.cheng.taskmanager.entity.Achievement;
 import com.cheng.taskmanager.entity.Event;
 import com.cheng.taskmanager.entity.EventFactory;
@@ -72,6 +73,10 @@ public class EventServiceTest {
         addProgress(event, MIDDLE_PROGRESS, MIDDLE_PROGRESS - START_PROGRESS, today);
 
         when(eventMapper.getEventById(TEST_EVENT_ID)).thenReturn(event);
+        List<Event> events = new ArrayList<>();
+        events.add(event);
+
+        when(eventMapper.getCurrentEvents()).thenReturn(events);
     }
 
     @Test
@@ -202,8 +207,25 @@ public class EventServiceTest {
 
     @Test
     public void shouldCallGetCurrentEventsWhenGetCurrentEvents() {
-        service.getCurrentEvents();
+        List<EventInfo> eventInfos = service.getCurrentEvents();
         verify(eventMapper).getCurrentEvents();
+        assertNotNull(eventInfos);
     }
 
+    @Test
+    public void shouldProgressListOfEventWhenGetEvents() {
+        List<EventInfo> eventInfos = service.getCurrentEvents();
+        EventInfo info = eventInfos.get(0);
+        Event event = info.getEvent();
+        assertNull(event.getProgressList());
+    }
+
+    @Test
+    public void shouldProgressBeTheFirstWhenGetEvents() {
+        List<EventInfo> eventInfos = service.getCurrentEvents();
+        EventInfo info = eventInfos.get(0);
+        Progress progress = info.getLastProgress();
+        assertEquals(progress.getRecord(), MIDDLE_PROGRESS - START_PROGRESS);
+        assertEquals(progress.getProgress(), MIDDLE_PROGRESS);
+    }
 }

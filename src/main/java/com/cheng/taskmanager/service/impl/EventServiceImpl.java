@@ -1,5 +1,6 @@
 package com.cheng.taskmanager.service.impl;
 
+import com.cheng.taskmanager.bean.EventInfo;
 import com.cheng.taskmanager.entity.Achievement;
 import com.cheng.taskmanager.entity.Event;
 import com.cheng.taskmanager.entity.Progress;
@@ -10,6 +11,7 @@ import com.cheng.taskmanager.utils.DateFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -94,7 +96,17 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public List<Event> getCurrentEvents() {
-        return eventMapper.getCurrentEvents();
+    public List<EventInfo> getCurrentEvents() {
+        List<Event> events = eventMapper.getCurrentEvents();
+        List<EventInfo> eventInfos = new ArrayList<>();
+        for (Event event : events) {
+            EventInfo info = new EventInfo();
+            Progress progress = event.getProgressList().get(0);
+            event.setProgressList(null);
+            info.setEvent(event);
+            info.setLastProgress(progress);
+            eventInfos.add(info);
+        }
+        return eventInfos;
     }
 }
