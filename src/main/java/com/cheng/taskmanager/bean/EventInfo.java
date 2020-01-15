@@ -4,22 +4,22 @@ import com.cheng.taskmanager.entity.Event;
 import com.cheng.taskmanager.entity.Progress;
 
 public class EventInfo {
-    private Event event;
-    private Progress lastProgress;
+    private EventBean event;
+    private Progress progress;
 
-    public Event getEvent() {
+    public EventBean getEvent() {
         return event;
     }
 
-    public void setEvent(Event event) {
+    public void setEvent(EventBean event) {
         this.event = event;
     }
 
-    public Progress getLastProgress() {
-        return lastProgress;
+    public Progress getProgress() {
+        return progress;
     }
 
-    public void setLastProgress(Progress lastProgress) {
-        this.lastProgress = lastProgress;
+    public void setProgress(Progress progress) {
+        this.progress = progress;
     }
 }

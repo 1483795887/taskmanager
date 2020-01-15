@@ -1,5 +1,6 @@
 package com.cheng.taskmanager.service.impl;
 
+import com.cheng.taskmanager.bean.EventBean;
 import com.cheng.taskmanager.bean.EventInfo;
 import com.cheng.taskmanager.entity.Achievement;
 import com.cheng.taskmanager.entity.Event;
@@ -102,9 +103,9 @@ public class EventServiceImpl implements EventService {
         for (Event event : events) {
             EventInfo info = new EventInfo();
             Progress progress = event.getProgressList().get(0);
-            event.setProgressList(null);
-            info.setEvent(event);
-            info.setLastProgress(progress);
+            EventBean eventBean = EventBean.getFromEvent(event);
+            info.setEvent(eventBean);
+            info.setProgress(progress);
             eventInfos.add(info);
         }
         return eventInfos;

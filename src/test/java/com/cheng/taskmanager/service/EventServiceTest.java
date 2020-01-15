@@ -1,5 +1,6 @@
 package com.cheng.taskmanager.service;
 
+import com.cheng.taskmanager.bean.EventBean;
 import com.cheng.taskmanager.bean.EventInfo;
 import com.cheng.taskmanager.entity.Achievement;
 import com.cheng.taskmanager.entity.Event;
@@ -213,19 +214,17 @@ public class EventServiceTest {
     }
 
     @Test
-    public void shouldProgressListOfEventWhenGetEvents() {
+    public void shouldInfoBeTheFirstWhenGetEvents() {
         List<EventInfo> eventInfos = service.getCurrentEvents();
         EventInfo info = eventInfos.get(0);
-        Event event = info.getEvent();
-        assertNull(event.getProgressList());
-    }
-
-    @Test
-    public void shouldProgressBeTheFirstWhenGetEvents() {
-        List<EventInfo> eventInfos = service.getCurrentEvents();
-        EventInfo info = eventInfos.get(0);
-        Progress progress = info.getLastProgress();
-        assertEquals(progress.getRecord(), MIDDLE_PROGRESS - START_PROGRESS);
-        assertEquals(progress.getProgress(), MIDDLE_PROGRESS);
+        EventBean bean = info.getEvent();
+        Progress progress = info.getProgress();
+        Event event = service.getEventById(TEST_EVENT_ID);
+        Progress progress1 = event.getProgressList().get(0);
+        assertEquals(progress.getRecord(), progress1.getRecord());
+        assertEquals(progress.getProgress(), progress1.getProgress());
+        assertEquals(bean.getName(), event.getName());
+        assertEquals(bean.getStartDate().toString(), event.getStartDate().toString());
+        assertEquals(bean.getTargetProgress(), event.getTargetProgress());
     }
 }
