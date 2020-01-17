@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -31,8 +32,7 @@ public class EventController {
                                         BindingResult bindingResult) {
         Map<String, Object> map = new HashMap<>();
         if (bindingResult.hasErrors()) {
-            ResultBean resultBean = new ResultBean(ResultBean.FAILED, "param error");
-            map.put("result", resultBean);
+            map.put("result", ResultBean.paramError);
         } else {
             Event event = new Event();
             event.setRunning(true);
@@ -40,8 +40,29 @@ public class EventController {
             event.setTargetProgress(bean.getTargetProgress());
             event.setType(bean.getType());
             eventService.addEvent(event);
-            ResultBean resultBean = new ResultBean(ResultBean.SUCCESS, "success");
-            map.put("result", resultBean);
+            map.put("result", ResultBean.succeed);
+        }
+        return map;
+    }
+
+    @RequestMapping("/getEvent")
+    public Map<String, Object> getEventById(@RequestBody @NotNull Integer id,
+                                            BindingResult bindingResult) {
+        Map<String, Object> map = new HashMap<>();
+        if (bindingResult.hasErrors()) {
+            map.put("result", ResultBean.paramError);
+        } else {
+            Event event = eventService.getEventById(id);
+            if (event == null) {
+                ResultBean resultBean = new ResultBean(
+                        ResultBean.FAILED, "event not exist");
+                map.put("result", resultBean);
+                map.put("event", null);
+            } else {
+                map.put("result", ResultBean.succeed);
+                map.put("event", event);
+            }
+
         }
         return map;
     }

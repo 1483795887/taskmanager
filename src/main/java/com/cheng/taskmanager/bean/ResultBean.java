@@ -4,6 +4,9 @@ public class ResultBean {
     public final static int SUCCESS = 0;
     public final static int FAILED = 1;
 
+    public final static ResultBean paramError = new ResultBean(FAILED, "paramError");
+    public final static ResultBean succeed = new ResultBean(SUCCESS, "success");
+
     private int code;
     private String msg;
 

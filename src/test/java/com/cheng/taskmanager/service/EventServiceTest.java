@@ -4,12 +4,12 @@ import com.cheng.taskmanager.bean.EventBean;
 import com.cheng.taskmanager.bean.EventInfo;
 import com.cheng.taskmanager.entity.Achievement;
 import com.cheng.taskmanager.entity.Event;
-import com.cheng.taskmanager.entity.EventFactory;
 import com.cheng.taskmanager.entity.Progress;
 import com.cheng.taskmanager.mapper.AchievementMapper;
 import com.cheng.taskmanager.mapper.EventMapper;
 import com.cheng.taskmanager.service.impl.EventServiceImpl;
 import com.cheng.taskmanager.utils.DateFactory;
+import com.cheng.taskmanager.utils.EventFactory;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -18,6 +18,7 @@ import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.cheng.taskmanager.utils.EventFactory.addProgress;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -37,18 +38,6 @@ public class EventServiceTest {
     private ArgumentCaptor<Achievement> achievementArgumentCaptor;
     private Date today;
     private Date startDate;
-
-    private void addProgress(Event event, int p, int r, Date date) {
-        Progress progress = new Progress();
-        progress.setRecord(r);
-        progress.setDate(date);
-        progress.setProgress(p);
-        progress.setEid(event.getId());
-        List<Progress> progresses = new ArrayList<>();
-        progresses.add(progress);
-        progresses.addAll(event.getProgressList());
-        event.setProgressList(progresses);
-    }
 
     @Before
     public void setUp() {
