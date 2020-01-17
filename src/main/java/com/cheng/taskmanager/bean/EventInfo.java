@@ -1,6 +1,5 @@
 package com.cheng.taskmanager.bean;
 
-import com.cheng.taskmanager.entity.Event;
 import com.cheng.taskmanager.entity.Progress;
 
 public class EventInfo {

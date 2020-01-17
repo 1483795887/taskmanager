@@ -1,9 +1,5 @@
 package com.cheng.taskmanager.entity;
 
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.PastOrPresent;
-import javax.validation.constraints.Positive;
 import java.sql.Date;
 import java.util.List;
 
@@ -15,15 +11,10 @@ public class Event {
     public final static int CARD = 1000;
 
     private Integer id;
-    @NotNull
-    @NotEmpty
     private String name;
-    @NotNull
-    @Positive
     private Integer targetProgress;
     private Date startDate;
     private Boolean running;
-    @NotNull
     private Integer type;
     private List<Progress> progressList;
 

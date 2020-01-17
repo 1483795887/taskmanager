@@ -1,7 +1,6 @@
 drop table if exists progress;
 drop table if exists achievement;
 drop table if exists event;
-drop table if exists read_record;
 
 CREATE TABLE event
 (
@@ -22,13 +21,6 @@ CREATE TABLE progress
   date     date,
   unique key eid_date_key (eid, date),
   CONSTRAINT progress_event_id_fk FOREIGN KEY (eid) REFERENCES event (id)
-);
-
-create table read_record
-(
-  date   date,
-  record int,
-  unique key date_key(date)
 );
 
 create table achievement (

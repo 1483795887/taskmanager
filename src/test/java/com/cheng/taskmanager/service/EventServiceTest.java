@@ -151,7 +151,7 @@ public class EventServiceTest {
         verify(achievementMapper).addAchievement(achievementArgumentCaptor.capture());
 
         Achievement achievement = achievementArgumentCaptor.getValue();
-        assertEquals(achievement.getDate(), today);
+        assertEquals(achievement.getDate().toString(), today.toString());
         assertEquals(achievement.getEid(), TEST_EVENT_ID);
     }
 

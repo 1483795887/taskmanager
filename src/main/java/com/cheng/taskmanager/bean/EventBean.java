@@ -4,8 +4,7 @@ import com.cheng.taskmanager.entity.Event;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.PastOrPresent;
-import javax.validation.constraints.PositiveOrZero;
+import javax.validation.constraints.Positive;
 import java.sql.Date;
 
 public class EventBean {
@@ -13,11 +12,9 @@ public class EventBean {
     @NotNull
     @NotEmpty
     private String name;
-    @NotNull
-    @PastOrPresent
     private Date startDate;
     @NotNull
-    @PositiveOrZero
+    @Positive
     private Integer targetProgress;
     @NotNull
     private Integer type;
@@ -62,7 +59,7 @@ public class EventBean {
         this.type = type;
     }
 
-    public static EventBean getFromEvent(Event event){
+    public static EventBean getFromEvent(Event event) {
         EventBean eventBean = new EventBean();
         eventBean.setId(event.getId());
         eventBean.setName(event.getName());

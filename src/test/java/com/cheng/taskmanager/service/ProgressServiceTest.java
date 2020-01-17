@@ -92,7 +92,7 @@ public class ProgressServiceTest {
         EventBean bean = info.getEvent();
         Progress expectProgress = event.getProgressList().get(0);
         assertEquals(bean.getName(), event.getName());
-        assertEquals(info.getProgress().getProgress(),expectProgress.getProgress());
+        assertEquals(info.getProgress().getProgress(), expectProgress.getProgress());
         assertEquals(info.getProgress().getRecord(), expectProgress.getRecord());
     }
 }

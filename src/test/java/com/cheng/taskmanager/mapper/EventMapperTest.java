@@ -271,7 +271,7 @@ public class EventMapperTest {
 
     @Test
     @Transactional
-    public void shouldCountRightWhenUpperLimit(){
+    public void shouldCountRightWhenUpperLimit() {
         int count = mapper.getProgresses(middleday1, today).size();
         addTestProgresses();
         assertEquals(count + 2, mapper.getProgresses(middleday1, today).size());

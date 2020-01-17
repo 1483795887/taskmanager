@@ -65,7 +65,6 @@ public class AchievementMapperTest {
     }
 
 
-
     private void addTestDateDates() {
         addAchievement(oldday);
         addAchievement(someday);
