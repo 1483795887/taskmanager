@@ -3,6 +3,7 @@ package com.cheng.taskmanager.controller;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.cheng.taskmanager.bean.EventBean;
+import com.cheng.taskmanager.bean.EventUpdateBean;
 import com.cheng.taskmanager.bean.ResultBean;
 import com.cheng.taskmanager.entity.Event;
 import com.cheng.taskmanager.service.EventService;
@@ -29,6 +30,7 @@ import java.util.ArrayList;
 import static com.cheng.taskmanager.utils.EventFactory.addProgress;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -49,6 +51,10 @@ public class EventControllerTest {
     private Date today;
 
     private final static int TEST_EVENT_ID = 1;
+
+    private final static String ADD_EVENT_URL = "/event/addEvent";
+    private final static String GET_EVENT_URL = "/event/getEvent";
+    private final static String UPDATE_EVENT_URL = "/event/updateEvent";
 
     private EventBean getEventBean() {
         EventBean bean = new EventBean();
@@ -75,10 +81,11 @@ public class EventControllerTest {
     }
 
     private JSONObject postDate(String url, Object object) throws Exception {
+        String jsonStr = JSON.toJSONString(object);
         MvcResult result = mockMvc.perform(
                 post(url)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(JSON.toJSONString(object))
+                        .content(jsonStr)
                         .accept(MediaType.APPLICATION_JSON))
                 .andReturn();
         String string = result.getResponse().getContentAsString();
@@ -109,7 +116,7 @@ public class EventControllerTest {
     public void shouldReturnFailResultWhenTargetProgressNull() throws Exception {
         EventBean bean = getEventBean();
         bean.setTargetProgress(null);
-        JSONObject map = postDate("/event/addEvent", bean);
+        JSONObject map = postDate(ADD_EVENT_URL, bean);
         checkFailed(map);
 
     }
@@ -118,7 +125,7 @@ public class EventControllerTest {
     public void shouldReturnFailResultWhenTargetProgressNegative() throws Exception {
         EventBean bean = getEventBean();
         bean.setTargetProgress(-1);
-        JSONObject map = postDate("/event/addEvent", bean);
+        JSONObject map = postDate(ADD_EVENT_URL, bean);
         checkFailed(map);
     }
 
@@ -126,7 +133,7 @@ public class EventControllerTest {
     public void shouldReturnFailResultWhenTargetProgressZero() throws Exception {
         EventBean bean = getEventBean();
         bean.setTargetProgress(0);
-        JSONObject map = postDate("/event/addEvent", bean);
+        JSONObject map = postDate(ADD_EVENT_URL, bean);
         checkFailed(map);
     }
 
@@ -134,7 +141,7 @@ public class EventControllerTest {
     public void shouldReturnFailResultWhenTypeNull() throws Exception {
         EventBean bean = getEventBean();
         bean.setType(null);
-        JSONObject map = postDate("/event/addEvent", bean);
+        JSONObject map = postDate(ADD_EVENT_URL, bean);
         checkFailed(map);
     }
 
@@ -142,7 +149,7 @@ public class EventControllerTest {
     public void shouldReturnSucceedResultWhenEventRight() throws Exception {
         EventBean bean = getEventBean();
 
-        JSONObject map = postDate("/event/addEvent", bean);
+        JSONObject map = postDate(ADD_EVENT_URL, bean);
         ResultBean bean1 = map.getJSONObject("result").toJavaObject(ResultBean.class);
 
         ArgumentCaptor<Event> eventArgumentCaptor = ArgumentCaptor.forClass(Event.class);
@@ -159,7 +166,7 @@ public class EventControllerTest {
     @Test
     public void shouldReturnBadRequestWhenGetEventIdNull() throws Exception {
         mockMvc.perform(
-                post("/event/getEvent")
+                post(GET_EVENT_URL)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(JSON.toJSONString(null)))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest());
@@ -167,18 +174,95 @@ public class EventControllerTest {
 
     @Test
     public void shouldFailWhenGetEventIdNotExist() throws Exception {
-        when(service.getEventById(1)).thenReturn(null);
-        JSONObject map = postDate("/event/getEvent", 1);
+        when(service.getEventById(TEST_EVENT_ID)).thenReturn(null);
+        JSONObject map = postDate(GET_EVENT_URL, TEST_EVENT_ID);
         checkFailed(map);
     }
 
     @Test
     public void shouldSucceedWhenGetEventAlRight() throws Exception {
         when(service.getEventById(TEST_EVENT_ID)).thenReturn(event);
-        JSONObject map = postDate("/event/getEvent", TEST_EVENT_ID);
+        JSONObject map = postDate(GET_EVENT_URL, TEST_EVENT_ID);
         checkSucceed(map);
         Event event = map.getJSONObject("event").toJavaObject(Event.class);
         assertNotNull(event);
         assertNotNull(event.getProgressList());
+    }
+
+    @Test
+    public void shouldBadRequestWhenUpdateEventWithNullId() throws Exception {
+        mockMvc.perform(
+                post(UPDATE_EVENT_URL)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(JSON.toJSONString(null)))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+    }
+
+    @Test
+    public void shouldFailWhenUpdateEventIdNotExist() throws Exception {
+        when(service.getEventById(TEST_EVENT_ID)).thenReturn(null);
+        EventUpdateBean eventUpdateBean = new EventUpdateBean();
+        eventUpdateBean.setId(TEST_EVENT_ID);
+        JSONObject map = postDate(UPDATE_EVENT_URL, eventUpdateBean);
+        checkFailed(map);
+    }
+
+    @Test
+    public void shouldNotChangeWhenUpdateWithNull() throws Exception {
+        when(service.getEventById(TEST_EVENT_ID)).thenReturn(event);
+        String oName = event.getName();
+        int oTargetProgress = event.getTargetProgress();
+
+        EventUpdateBean eventUpdateBean = new EventUpdateBean();
+        eventUpdateBean.setId(TEST_EVENT_ID);
+        JSONObject map = postDate(UPDATE_EVENT_URL, eventUpdateBean);
+
+        verify(service).updateEvent(any(Event.class));
+        checkSucceed(map);
+        map = postDate(GET_EVENT_URL, TEST_EVENT_ID);
+        checkSucceed(map);
+        Event event1 = map.getJSONObject("event").toJavaObject(Event.class);
+        assertEquals(event1.getName(), oName);
+        assertEquals(event1.getTargetProgress(), oTargetProgress);
+    }
+
+    @Test
+    public void shouldChangeNameWhenUpdateIt() throws Exception {
+        when(service.getEventById(TEST_EVENT_ID)).thenReturn(event);
+        String nName = "newName";
+        int oTargetProgress = event.getTargetProgress();
+
+        EventUpdateBean eventUpdateBean = new EventUpdateBean();
+        eventUpdateBean.setId(TEST_EVENT_ID);
+        eventUpdateBean.setName(nName);
+        JSONObject map = postDate(UPDATE_EVENT_URL, eventUpdateBean);
+
+        verify(service).updateEvent(any(Event.class));
+        checkSucceed(map);
+        map = postDate(GET_EVENT_URL, TEST_EVENT_ID);
+        checkSucceed(map);
+        Event event1 = map.getJSONObject("event").toJavaObject(Event.class);
+        assertEquals(event1.getName(), nName);
+        assertEquals(event1.getTargetProgress(), oTargetProgress);
+    }
+
+    @Test
+    public void shouldChangeTargetProgressWhenUpdateIt() throws Exception {
+        when(service.getEventById(TEST_EVENT_ID)).thenReturn(event);
+        String nName = event.getName();
+        int nTargetProgress = 2300;
+
+        EventUpdateBean eventUpdateBean = new EventUpdateBean();
+        eventUpdateBean.setId(TEST_EVENT_ID);
+        eventUpdateBean.setTargetProgress(nTargetProgress);
+        JSONObject map = postDate(UPDATE_EVENT_URL, eventUpdateBean);
+
+        verify(service).updateEvent(any(Event.class));
+        checkSucceed(map);
+        map = postDate(GET_EVENT_URL, TEST_EVENT_ID);
+        checkSucceed(map);
+        Event event1 = map.getJSONObject("event").toJavaObject(Event.class);
+        assertEquals(event1.getName(), nName);
+        assertEquals(event1.getTargetProgress(), nTargetProgress);
     }
 }

@@ -1,6 +1,7 @@
 package com.cheng.taskmanager.controller;
 
 import com.cheng.taskmanager.bean.EventBean;
+import com.cheng.taskmanager.bean.EventUpdateBean;
 import com.cheng.taskmanager.bean.ResultBean;
 import com.cheng.taskmanager.entity.Event;
 import com.cheng.taskmanager.service.EventService;
@@ -61,6 +62,28 @@ public class EventController {
             } else {
                 map.put("result", ResultBean.succeed);
                 map.put("event", event);
+            }
+        }
+        return map;
+    }
+
+    @RequestMapping("/updateEvent")
+    public Map<String, Object> updateEvent(@RequestBody @Valid EventUpdateBean event,
+                                           BindingResult bindingResult) {
+        Map<String, Object> map = new HashMap<>();
+        if (bindingResult.hasErrors()) {
+            map.put("result", ResultBean.paramError);
+        } else {
+            Event event1 = eventService.getEventById(event.getId());
+            if (event1 == null) {
+                map.put("result", new ResultBean(ResultBean.FAILED, "event not exist"));
+            } else {
+                if (event.getName() != null)
+                    event1.setName(event.getName());
+                if (event.getTargetProgress() != null)
+                    event1.setTargetProgress(event.getTargetProgress());
+                eventService.updateEvent(event1);
+                map.put("result", ResultBean.succeed);
             }
 
         }
