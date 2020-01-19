@@ -33,7 +33,8 @@ public class PostHelper {
         return JSONObject.parseObject(string);
     }
 
-    public void checkFailed(JSONObject map) {
+    public void checkFailed(String url, Object object) throws Exception {
+        JSONObject map = postDate(url, object);
         ResultBean bean1 = map.getJSONObject("result").toJavaObject(ResultBean.class);
         assertNotNull(bean1);
         assertEquals(bean1.getCode(), ResultBean.FAILED);

@@ -111,7 +111,12 @@ public class EventController {
         if (bindingResult.hasErrors()) {
             addResultParamError(map);
         } else {
-            addResultSuccess(map);
+            Event event = eventService.getEventById(bean.getId());
+            if (event == null)
+                addResultEventNotExist(map);
+            else {
+                addResultSuccess(map);
+            }
         }
 
         return map;

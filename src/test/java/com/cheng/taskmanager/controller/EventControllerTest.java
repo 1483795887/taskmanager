@@ -43,6 +43,7 @@ public class EventControllerTest {
     private Event event;
     private Date someday;
     private Date today;
+    private ProgressUpdateBean progressUpdateBean;
 
     private final static int TEST_EVENT_ID = 1;
 
@@ -73,22 +74,24 @@ public class EventControllerTest {
         event.setProgressList(new ArrayList<>());
         addProgress(event, 10, 10, someday);
         addProgress(event, 20, 10, today);
+
+        progressUpdateBean = new ProgressUpdateBean();
+        progressUpdateBean.setId(TEST_EVENT_ID);
+        progressUpdateBean.setProgress(10);
     }
 
     @Test
     public void shouldReturnFailResultWhenNameNull() throws Exception {
         EventBean bean = getEventBean();
         bean.setName(null);
-        JSONObject map = helper.postDate("/event/addEvent", bean);
-        helper.checkFailed(map);
+        helper.checkFailed(ADD_EVENT_URL, bean);
     }
 
     @Test
     public void shouldReturnFailResultWhenTargetProgressNull() throws Exception {
         EventBean bean = getEventBean();
         bean.setTargetProgress(null);
-        JSONObject map = helper.postDate(ADD_EVENT_URL, bean);
-        helper.checkFailed(map);
+        helper.checkFailed(ADD_EVENT_URL, bean);
 
     }
 
@@ -96,24 +99,21 @@ public class EventControllerTest {
     public void shouldReturnFailResultWhenTargetProgressNegative() throws Exception {
         EventBean bean = getEventBean();
         bean.setTargetProgress(-1);
-        JSONObject map = helper.postDate(ADD_EVENT_URL, bean);
-        helper.checkFailed(map);
+        helper.checkFailed(ADD_EVENT_URL, bean);
     }
 
     @Test
     public void shouldReturnFailResultWhenTargetProgressZero() throws Exception {
         EventBean bean = getEventBean();
         bean.setTargetProgress(0);
-        JSONObject map = helper.postDate(ADD_EVENT_URL, bean);
-        helper.checkFailed(map);
+        helper.checkFailed(ADD_EVENT_URL, bean);
     }
 
     @Test
     public void shouldReturnFailResultWhenTypeNull() throws Exception {
         EventBean bean = getEventBean();
         bean.setType(null);
-        JSONObject map = helper.postDate(ADD_EVENT_URL, bean);
-        helper.checkFailed(map);
+        helper.checkFailed(ADD_EVENT_URL, bean);
     }
 
     @Test
@@ -141,8 +141,7 @@ public class EventControllerTest {
     @Test
     public void shouldFailWhenGetEventIdNotExist() throws Exception {
         when(service.getEventById(TEST_EVENT_ID)).thenReturn(null);
-        JSONObject map = helper.postDate(GET_EVENT_URL, TEST_EVENT_ID);
-        helper.checkFailed(map);
+        helper.checkFailed(GET_EVENT_URL, TEST_EVENT_ID);
     }
 
     @Test
@@ -165,8 +164,7 @@ public class EventControllerTest {
         when(service.getEventById(TEST_EVENT_ID)).thenReturn(null);
         EventUpdateBean eventUpdateBean = new EventUpdateBean();
         eventUpdateBean.setId(TEST_EVENT_ID);
-        JSONObject map = helper.postDate(UPDATE_EVENT_URL, eventUpdateBean);
-        helper.checkFailed(map);
+        helper.checkFailed(UPDATE_EVENT_URL, eventUpdateBean);
     }
 
     @Test
@@ -235,26 +233,25 @@ public class EventControllerTest {
 
     @Test
     public void shouldFailWhenUpdateProgressWithNullId() throws Exception {
-        ProgressUpdateBean bean = new ProgressUpdateBean();
-        bean.setProgress(10);
-        JSONObject map = helper.postDate(UPDATE_PROGRESS, bean);
-        helper.checkFailed(map);
+        progressUpdateBean.setId(null);
+        helper.checkFailed(UPDATE_PROGRESS, progressUpdateBean);
     }
 
     @Test
     public void shouldFailWhenUpdateProgressWithNullProgress() throws Exception {
-        ProgressUpdateBean bean = new ProgressUpdateBean();
-        bean.setId(TEST_EVENT_ID);
-        JSONObject map = helper.postDate(UPDATE_PROGRESS, bean);
-        helper.checkFailed(map);
+        progressUpdateBean.setProgress(null);
+        helper.checkFailed(UPDATE_PROGRESS, progressUpdateBean);
     }
 
     @Test
     public void shouldFailWhenUpdateProgressWithMinusProgress() throws Exception {
-        ProgressUpdateBean bean = new ProgressUpdateBean();
-        bean.setId(TEST_EVENT_ID);
-        bean.setProgress(-1);
-        JSONObject map = helper.postDate(UPDATE_PROGRESS, bean);
-        helper.checkFailed(map);
+        progressUpdateBean.setProgress(-1);
+        helper.checkFailed(UPDATE_PROGRESS, progressUpdateBean);
+    }
+
+    @Test
+    public void shouldFailWhenUpdateProgressWithNotExistId() throws Exception {
+        when(service.getEventById(TEST_EVENT_ID)).thenReturn(null);
+        helper.checkFailed(UPDATE_PROGRESS, progressUpdateBean);
     }
 }
