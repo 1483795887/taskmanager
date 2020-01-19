@@ -2,6 +2,7 @@ package com.cheng.taskmanager.controller;
 
 import com.cheng.taskmanager.bean.EventBean;
 import com.cheng.taskmanager.bean.EventUpdateBean;
+import com.cheng.taskmanager.bean.ProgressUpdateBean;
 import com.cheng.taskmanager.bean.ResultBean;
 import com.cheng.taskmanager.entity.Event;
 import com.cheng.taskmanager.service.EventService;
@@ -22,10 +23,25 @@ import java.util.Map;
 public class EventController {
 
     private EventService eventService;
+    private final static String RESULT = "result";
+    private final static String EVENT = "event";
 
     @Autowired
     public EventController(EventService eventService) {
         this.eventService = eventService;
+    }
+
+    private void addResultSuccess(Map<String, Object> map) {
+        map.put(RESULT, ResultBean.succeed);
+    }
+
+    private void addResultParamError(Map<String, Object> map) {
+        map.put(RESULT, ResultBean.paramError);
+    }
+
+    private void addResultEventNotExist(Map<String, Object> map) {
+        ResultBean bean = new ResultBean(ResultBean.FAILED, "event not exist");
+        map.put(RESULT, bean);
     }
 
     @RequestMapping("/addEvent")
@@ -33,7 +49,7 @@ public class EventController {
                                         BindingResult bindingResult) {
         Map<String, Object> map = new HashMap<>();
         if (bindingResult.hasErrors()) {
-            map.put("result", ResultBean.paramError);
+            addResultParamError(map);
         } else {
             Event event = new Event();
             event.setRunning(true);
@@ -41,7 +57,7 @@ public class EventController {
             event.setTargetProgress(bean.getTargetProgress());
             event.setType(bean.getType());
             eventService.addEvent(event);
-            map.put("result", ResultBean.succeed);
+            addResultSuccess(map);
         }
         return map;
     }
@@ -51,17 +67,15 @@ public class EventController {
                                             BindingResult bindingResult) {
         Map<String, Object> map = new HashMap<>();
         if (bindingResult.hasErrors()) {
-            map.put("result", ResultBean.paramError);
+            addResultParamError(map);
         } else {
             Event event = eventService.getEventById(id);
             if (event == null) {
-                ResultBean resultBean = new ResultBean(
-                        ResultBean.FAILED, "event not exist");
-                map.put("result", resultBean);
-                map.put("event", null);
+                addResultEventNotExist(map);
+                map.put(EVENT, null);
             } else {
-                map.put("result", ResultBean.succeed);
-                map.put("event", event);
+                map.put(EVENT, event);
+                addResultSuccess(map);
             }
         }
         return map;
@@ -72,21 +86,34 @@ public class EventController {
                                            BindingResult bindingResult) {
         Map<String, Object> map = new HashMap<>();
         if (bindingResult.hasErrors()) {
-            map.put("result", ResultBean.paramError);
+            addResultParamError(map);
         } else {
             Event event1 = eventService.getEventById(event.getId());
             if (event1 == null) {
-                map.put("result", new ResultBean(ResultBean.FAILED, "event not exist"));
+                addResultEventNotExist(map);
             } else {
                 if (event.getName() != null)
                     event1.setName(event.getName());
                 if (event.getTargetProgress() != null)
                     event1.setTargetProgress(event.getTargetProgress());
                 eventService.updateEvent(event1);
-                map.put("result", ResultBean.succeed);
+                addResultSuccess(map);
             }
 
         }
+        return map;
+    }
+
+    @RequestMapping("/updateProgress")
+    public Map<String, Object> updateProgress(@RequestBody @Valid ProgressUpdateBean bean,
+                                              BindingResult bindingResult) {
+        Map<String, Object> map = new HashMap<>();
+        if (bindingResult.hasErrors()) {
+            addResultParamError(map);
+        } else {
+            addResultSuccess(map);
+        }
+
         return map;
     }
 }
