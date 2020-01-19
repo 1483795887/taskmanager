@@ -25,6 +25,7 @@ public class EventController {
     private EventService eventService;
     private final static String RESULT = "result";
     private final static String EVENT = "event";
+    private final static String EVENTS = "events";
 
     @Autowired
     public EventController(EventService eventService) {
@@ -115,10 +116,18 @@ public class EventController {
             if (event == null)
                 addResultEventNotExist(map);
             else {
+                eventService.updateProgress(bean.getId(), bean.getProgress());
                 addResultSuccess(map);
             }
         }
+        return map;
+    }
 
+    @RequestMapping("/getCurrentEvents")
+    public Map<String, Object> getCurrentEvents() {
+        Map<String,Object> map = new HashMap<>();
+        addResultSuccess(map);
+        map.put(EVENTS,eventService.getCurrentEvents());
         return map;
     }
 }

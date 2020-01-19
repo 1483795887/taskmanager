@@ -2,9 +2,11 @@ package com.cheng.taskmanager.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.cheng.taskmanager.bean.EventBean;
+import com.cheng.taskmanager.bean.EventInfo;
 import com.cheng.taskmanager.bean.EventUpdateBean;
 import com.cheng.taskmanager.bean.ProgressUpdateBean;
 import com.cheng.taskmanager.entity.Event;
+import com.cheng.taskmanager.entity.Progress;
 import com.cheng.taskmanager.service.EventService;
 import com.cheng.taskmanager.utils.DateFactory;
 import com.cheng.taskmanager.utils.EventFactory;
@@ -21,6 +23,8 @@ import org.springframework.web.context.WebApplicationContext;
 
 import java.sql.Date;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import static com.cheng.taskmanager.utils.EventFactory.addProgress;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -51,6 +55,7 @@ public class EventControllerTest {
     private final static String GET_EVENT_URL = "/event/getEvent";
     private final static String UPDATE_EVENT_URL = "/event/updateEvent";
     private final static String UPDATE_PROGRESS = "/event/updateProgress";
+    private final static String GET_CURRENT_EVENTS = "/event/getCurrentEvents";
 
     private EventBean getEventBean() {
         EventBean bean = new EventBean();
@@ -254,4 +259,44 @@ public class EventControllerTest {
         when(service.getEventById(TEST_EVENT_ID)).thenReturn(null);
         helper.checkFailed(UPDATE_PROGRESS, progressUpdateBean);
     }
+
+    @Test
+    public void shouldBeAlrightWhenUpdateProgress() throws Exception {
+        when(service.getEventById(TEST_EVENT_ID)).thenReturn(event);
+        JSONObject map = helper.postDate(UPDATE_PROGRESS, progressUpdateBean);
+        helper.checkSucceed(map);
+        verify(service).updateProgress(progressUpdateBean.getId(),
+                progressUpdateBean.getProgress());
+    }
+
+    @Test
+    public void shouldBeAlrightWhenGetCurrentProgresses() throws Exception {
+        List<EventInfo> infoList = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            EventBean bean = new EventBean();
+            bean.setName("test");
+            bean.setTargetProgress(100);
+            bean.setType(Event.BOOK);
+            bean.setId(i);
+            Progress progress = new Progress();
+            progress.setEid(i);
+            progress.setProgress(10);
+            progress.setRecord(10);
+            EventInfo eventInfo = new EventInfo();
+            eventInfo.setProgress(progress);
+            eventInfo.setEvent(bean);
+            infoList.add(eventInfo);
+        }
+
+        when(service.getCurrentEvents()).thenReturn(infoList);
+        JSONObject map = helper.postDate(GET_CURRENT_EVENTS, null);
+        helper.checkSucceed(map);
+        verify(service).getCurrentEvents();
+        EventInfo[] infos = map.getJSONArray("events")
+                .toJavaObject(EventInfo[].class);
+        assertNotNull(infos);
+        List<EventInfo> infos1 = Arrays.asList(infos);
+        assertEquals(10, infos1.size());
+    }
+
 }
