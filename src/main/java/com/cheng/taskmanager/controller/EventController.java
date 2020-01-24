@@ -2,7 +2,6 @@ package com.cheng.taskmanager.controller;
 
 import com.cheng.taskmanager.bean.EventBean;
 import com.cheng.taskmanager.bean.EventUpdateBean;
-import com.cheng.taskmanager.bean.ProgressUpdateBean;
 import com.cheng.taskmanager.bean.ResultBean;
 import com.cheng.taskmanager.entity.Event;
 import com.cheng.taskmanager.service.EventService;
@@ -22,10 +21,10 @@ import java.util.Map;
 @RequestMapping(value = "/event", method = RequestMethod.POST)
 public class EventController {
 
-    private EventService eventService;
     private final static String RESULT = "result";
     private final static String EVENT = "event";
     private final static String EVENTS = "events";
+    private EventService eventService;
 
     @Autowired
     public EventController(EventService eventService) {
@@ -90,44 +89,26 @@ public class EventController {
             addResultParamError(map);
         } else {
             Event event1 = eventService.getEventById(event.getId());
-            if (event1 == null) {
+            if (event1 == null ||
+                    event.getTargetProgress() < event.getCurrentProgress()) {
                 addResultEventNotExist(map);
             } else {
-                if (event.getName() != null)
-                    event1.setName(event.getName());
-                if (event.getTargetProgress() != null)
-                    event1.setTargetProgress(event.getTargetProgress());
+                event1.setName(event.getName());
+                event1.setTargetProgress(event.getTargetProgress());
                 eventService.updateEvent(event1);
+                eventService.updateProgress(event.getId(), event.getCurrentProgress());
                 addResultSuccess(map);
             }
 
-        }
-        return map;
-    }
-
-    @RequestMapping("/updateProgress")
-    public Map<String, Object> updateProgress(@RequestBody @Valid ProgressUpdateBean bean,
-                                              BindingResult bindingResult) {
-        Map<String, Object> map = new HashMap<>();
-        if (bindingResult.hasErrors()) {
-            addResultParamError(map);
-        } else {
-            Event event = eventService.getEventById(bean.getId());
-            if (event == null)
-                addResultEventNotExist(map);
-            else {
-                eventService.updateProgress(bean.getId(), bean.getProgress());
-                addResultSuccess(map);
-            }
         }
         return map;
     }
 
     @RequestMapping("/getCurrentEvents")
     public Map<String, Object> getCurrentEvents() {
-        Map<String,Object> map = new HashMap<>();
+        Map<String, Object> map = new HashMap<>();
         addResultSuccess(map);
-        map.put(EVENTS,eventService.getCurrentEvents());
+        map.put(EVENTS, eventService.getCurrentEvents());
         return map;
     }
 }

@@ -4,7 +4,7 @@ alter table event
   add column last_modified_date date;
 
 insert into event (name, current_progress, target_progress, start_date, event.last_modified_date, running, type)
-select name, current_progress, target_progress, last_modified_date, start_date, true, 0
+select name, current_progress, target_progress, start_date, last_modified_date, true, 0
 from task;
 
 insert into progress (eid, progress, record, date)

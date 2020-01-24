@@ -47,9 +47,7 @@ public class EventServiceImpl implements EventService {
     private boolean isEventRunning(Event event) {
         if (event == null)
             return false;
-        if (!event.getRunning())
-            return false;
-        return true;
+        return event.getRunning();
     }
 
     private boolean isFinished(Event event, int p) {
@@ -108,6 +106,8 @@ public class EventServiceImpl implements EventService {
             info.setProgress(progress);
             eventInfos.add(info);
         }
+        eventInfos.sort((o1, o2) ->
+                o2.getProgress().getDate().compareTo(o1.getProgress().getDate()));
         return eventInfos;
     }
 }

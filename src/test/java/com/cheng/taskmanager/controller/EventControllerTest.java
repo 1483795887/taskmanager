@@ -4,7 +4,6 @@ import com.alibaba.fastjson.JSONObject;
 import com.cheng.taskmanager.bean.EventBean;
 import com.cheng.taskmanager.bean.EventInfo;
 import com.cheng.taskmanager.bean.EventUpdateBean;
-import com.cheng.taskmanager.bean.ProgressUpdateBean;
 import com.cheng.taskmanager.entity.Event;
 import com.cheng.taskmanager.entity.Progress;
 import com.cheng.taskmanager.service.EventService;
@@ -37,25 +36,25 @@ import static org.mockito.Mockito.when;
 @SpringBootTest
 public class EventControllerTest {
 
-    private PostHelper helper;
-    @MockBean
-    private EventService service;
-
-    @Autowired
-    private WebApplicationContext context;
-
-    private Event event;
-    private Date someday;
-    private Date today;
-    private ProgressUpdateBean progressUpdateBean;
-
     private final static int TEST_EVENT_ID = 1;
-
+    private final static int OLD_PROGRESS = 10;
+    private final static int NEW_PROGRESS = 20;
+    private final static int OLD_TARGET_PROGRESS = 100;
+    private final static int NEW_TARGET_PROGRESS = 200;
+    private final static String OLD_NAME = "test";
+    private final static String NEW_NAME = "newTest";
     private final static String ADD_EVENT_URL = "/event/addEvent";
     private final static String GET_EVENT_URL = "/event/getEvent";
     private final static String UPDATE_EVENT_URL = "/event/updateEvent";
-    private final static String UPDATE_PROGRESS = "/event/updateProgress";
     private final static String GET_CURRENT_EVENTS = "/event/getCurrentEvents";
+    private PostHelper helper;
+    @MockBean
+    private EventService service;
+    @Autowired
+    private WebApplicationContext context;
+    private Event event;
+    private Date someday;
+    private Date today;
 
     private EventBean getEventBean() {
         EventBean bean = new EventBean();
@@ -78,11 +77,8 @@ public class EventControllerTest {
         event.setId(TEST_EVENT_ID);
         event.setProgressList(new ArrayList<>());
         addProgress(event, 10, 10, someday);
-        addProgress(event, 20, 10, today);
+        addProgress(event, OLD_PROGRESS, 10, today);
 
-        progressUpdateBean = new ProgressUpdateBean();
-        progressUpdateBean.setId(TEST_EVENT_ID);
-        progressUpdateBean.setProgress(10);
     }
 
     @Test
@@ -164,22 +160,86 @@ public class EventControllerTest {
         helper.checkBadRequest(UPDATE_EVENT_URL, null);
     }
 
+    private void checkFailForUpdate(Integer id, String name,
+                                    Integer tp, Integer cp) throws Exception {
+        when(service.getEventById(id)).thenReturn(event);
+
+        EventUpdateBean eventUpdateBean = new EventUpdateBean();
+        eventUpdateBean.setId(id);
+        eventUpdateBean.setName(name);
+        eventUpdateBean.setCurrentProgress(cp);
+        eventUpdateBean.setTargetProgress(tp);
+        helper.checkFailed(UPDATE_EVENT_URL, eventUpdateBean);
+    }
+
     @Test
     public void shouldFailWhenUpdateEventIdNotExist() throws Exception {
         when(service.getEventById(TEST_EVENT_ID)).thenReturn(null);
         EventUpdateBean eventUpdateBean = new EventUpdateBean();
         eventUpdateBean.setId(TEST_EVENT_ID);
+        eventUpdateBean.setName(OLD_NAME);
+        eventUpdateBean.setCurrentProgress(OLD_PROGRESS);
+        eventUpdateBean.setTargetProgress(OLD_TARGET_PROGRESS);
         helper.checkFailed(UPDATE_EVENT_URL, eventUpdateBean);
     }
 
     @Test
-    public void shouldNotChangeWhenUpdateWithNull() throws Exception {
+    public void shouldFailWhenUpdateWithNullName() throws Exception {
+        checkFailForUpdate(TEST_EVENT_ID, null,
+                OLD_TARGET_PROGRESS, OLD_PROGRESS);
+    }
+
+    @Test
+    public void shouldFailWhenUpdateWithEmptyName() throws Exception {
+        checkFailForUpdate(TEST_EVENT_ID, "",
+                OLD_TARGET_PROGRESS, OLD_PROGRESS);
+    }
+
+    @Test
+    public void shouldFailWhenUpdateWithNullTargetProgress() throws Exception {
+        checkFailForUpdate(TEST_EVENT_ID, OLD_NAME,
+                null, OLD_PROGRESS);
+    }
+
+    @Test
+    public void shouldFailWhenUpdateWithZeroTargetProgress() throws Exception {
+        checkFailForUpdate(TEST_EVENT_ID, OLD_NAME,
+                0, OLD_PROGRESS);
+    }
+
+    @Test
+    public void shouldFailWhenUpdateWithMinusTargetProgress() throws Exception {
+        checkFailForUpdate(TEST_EVENT_ID, OLD_NAME,
+                -1, OLD_PROGRESS);
+    }
+
+    @Test
+    public void shouldFailWhenUpdateWithTPLowerThanCP() throws Exception {
+        checkFailForUpdate(TEST_EVENT_ID, OLD_NAME,
+                OLD_PROGRESS - 1, OLD_PROGRESS);
+    }
+
+    @Test
+    public void shouldFailWhenUpdateWithNullCurrentProgress() throws Exception {
+        checkFailForUpdate(TEST_EVENT_ID, OLD_NAME,
+                OLD_TARGET_PROGRESS, null);
+    }
+
+    @Test
+    public void shouldFailWhenUpdateWithMinusCurrentProgress() throws Exception {
+        checkFailForUpdate(TEST_EVENT_ID, OLD_NAME,
+                OLD_TARGET_PROGRESS, -1);
+    }
+
+    private void checkChangedForUpdate(String name, int targetProgress,
+                                       int currentProgress) throws Exception {
         when(service.getEventById(TEST_EVENT_ID)).thenReturn(event);
-        String oName = event.getName();
-        int oTargetProgress = event.getTargetProgress();
 
         EventUpdateBean eventUpdateBean = new EventUpdateBean();
         eventUpdateBean.setId(TEST_EVENT_ID);
+        eventUpdateBean.setName(name);
+        eventUpdateBean.setTargetProgress(targetProgress);
+        eventUpdateBean.setCurrentProgress(currentProgress);
         JSONObject map = helper.postDate(UPDATE_EVENT_URL, eventUpdateBean);
 
         verify(service).updateEvent(any(Event.class));
@@ -187,86 +247,24 @@ public class EventControllerTest {
         map = helper.postDate(GET_EVENT_URL, TEST_EVENT_ID);
         helper.checkSucceed(map);
         Event event1 = map.getJSONObject("event").toJavaObject(Event.class);
-        assertEquals(event1.getName(), oName);
-        assertEquals(event1.getTargetProgress(), oTargetProgress);
+        assertEquals(event1.getName(), name);
+        assertEquals(event1.getTargetProgress(), targetProgress);
+        verify(service).updateProgress(TEST_EVENT_ID, currentProgress);
     }
 
     @Test
     public void shouldChangeNameWhenUpdateIt() throws Exception {
-        when(service.getEventById(TEST_EVENT_ID)).thenReturn(event);
-        String nName = "newName";
-        int oTargetProgress = event.getTargetProgress();
-
-        EventUpdateBean eventUpdateBean = new EventUpdateBean();
-        eventUpdateBean.setId(TEST_EVENT_ID);
-        eventUpdateBean.setName(nName);
-        JSONObject map = helper.postDate(UPDATE_EVENT_URL, eventUpdateBean);
-
-        verify(service).updateEvent(any(Event.class));
-        helper.checkSucceed(map);
-        map = helper.postDate(GET_EVENT_URL, TEST_EVENT_ID);
-        helper.checkSucceed(map);
-        Event event1 = map.getJSONObject("event").toJavaObject(Event.class);
-        assertEquals(event1.getName(), nName);
-        assertEquals(event1.getTargetProgress(), oTargetProgress);
+        checkChangedForUpdate(NEW_NAME, OLD_TARGET_PROGRESS, OLD_PROGRESS);
     }
 
     @Test
     public void shouldChangeTargetProgressWhenUpdateIt() throws Exception {
-        when(service.getEventById(TEST_EVENT_ID)).thenReturn(event);
-        String nName = event.getName();
-        int nTargetProgress = 2300;
-
-        EventUpdateBean eventUpdateBean = new EventUpdateBean();
-        eventUpdateBean.setId(TEST_EVENT_ID);
-        eventUpdateBean.setTargetProgress(nTargetProgress);
-        JSONObject map = helper.postDate(UPDATE_EVENT_URL, eventUpdateBean);
-
-        verify(service).updateEvent(any(Event.class));
-        helper.checkSucceed(map);
-        map = helper.postDate(GET_EVENT_URL, TEST_EVENT_ID);
-        helper.checkSucceed(map);
-        Event event1 = map.getJSONObject("event").toJavaObject(Event.class);
-        assertEquals(event1.getName(), nName);
-        assertEquals(event1.getTargetProgress(), nTargetProgress);
+        checkChangedForUpdate(OLD_NAME, NEW_TARGET_PROGRESS, OLD_PROGRESS);
     }
 
     @Test
-    public void shouldBadRequestWhenUpdateProgressWithNullData() throws Exception {
-        helper.checkBadRequest(UPDATE_PROGRESS, null);
-    }
-
-    @Test
-    public void shouldFailWhenUpdateProgressWithNullId() throws Exception {
-        progressUpdateBean.setId(null);
-        helper.checkFailed(UPDATE_PROGRESS, progressUpdateBean);
-    }
-
-    @Test
-    public void shouldFailWhenUpdateProgressWithNullProgress() throws Exception {
-        progressUpdateBean.setProgress(null);
-        helper.checkFailed(UPDATE_PROGRESS, progressUpdateBean);
-    }
-
-    @Test
-    public void shouldFailWhenUpdateProgressWithMinusProgress() throws Exception {
-        progressUpdateBean.setProgress(-1);
-        helper.checkFailed(UPDATE_PROGRESS, progressUpdateBean);
-    }
-
-    @Test
-    public void shouldFailWhenUpdateProgressWithNotExistId() throws Exception {
-        when(service.getEventById(TEST_EVENT_ID)).thenReturn(null);
-        helper.checkFailed(UPDATE_PROGRESS, progressUpdateBean);
-    }
-
-    @Test
-    public void shouldBeAlrightWhenUpdateProgress() throws Exception {
-        when(service.getEventById(TEST_EVENT_ID)).thenReturn(event);
-        JSONObject map = helper.postDate(UPDATE_PROGRESS, progressUpdateBean);
-        helper.checkSucceed(map);
-        verify(service).updateProgress(progressUpdateBean.getId(),
-                progressUpdateBean.getProgress());
+    public void shouldChangeCurrentProgressWhenUpdateIt() throws Exception {
+        checkChangedForUpdate(OLD_NAME, OLD_TARGET_PROGRESS, NEW_PROGRESS);
     }
 
     @Test

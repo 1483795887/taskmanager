@@ -203,7 +203,7 @@ public class EventServiceTest {
     }
 
     @Test
-    public void shouldInfoBeTheFirstWhenGetEvents() {
+    public void shouldInfoBeRightWhenGetEvents() {
         List<EventInfo> eventInfos = service.getCurrentEvents();
         EventInfo info = eventInfos.get(0);
         EventBean bean = info.getEvent();
@@ -215,5 +215,26 @@ public class EventServiceTest {
         assertEquals(bean.getName(), event.getName());
         assertEquals(bean.getStartDate().toString(), event.getStartDate().toString());
         assertEquals(bean.getTargetProgress(), event.getTargetProgress());
+    }
+
+    @Test
+    public void shouldBeOrderedByLastDateWhenGetEvents() {
+        Event event1 = EventFactory.getCurrentEvent(Event.BOOK);
+        event1.setProgressList(new ArrayList<>());
+        event1.setId(TEST_EVENT_ID);
+        addProgress(event1, 1, 1, startDate);
+        Event event2 = EventFactory.getCurrentEvent(Event.BOOK);
+        event2.setId(TEST_EVENT_ID + 1);
+        event2.setProgressList(new ArrayList<>());
+        addProgress(event2, 1, 1, today);
+        List<Event> eventList = new ArrayList<>();
+        eventList.add(event1);
+        eventList.add(event2);
+
+        when(eventMapper.getCurrentEvents()).thenReturn(eventList);
+
+        List<EventInfo> infos = service.getCurrentEvents();
+        EventInfo eventInfo = infos.get(0);
+        assertEquals(eventInfo.getProgress().getDate().toString(), today.toString());
     }
 }

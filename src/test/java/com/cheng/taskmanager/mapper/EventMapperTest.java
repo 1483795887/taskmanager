@@ -1,9 +1,9 @@
 package com.cheng.taskmanager.mapper;
 
 import com.cheng.taskmanager.entity.Event;
-import com.cheng.taskmanager.utils.EventFactory;
 import com.cheng.taskmanager.entity.Progress;
 import com.cheng.taskmanager.utils.DateFactory;
+import com.cheng.taskmanager.utils.EventFactory;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -13,6 +13,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Date;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -150,6 +151,17 @@ public class EventMapperTest {
     public void shouldGetRightCountWhenGetCurrentEvents() {
         addEventsByType();
         assertEquals(mapper.getCurrentEventCount(), mapper.getCurrentEvents().size());
+    }
+
+    @Test
+    @Transactional
+    public void shouldProgressOrderByDateWhenGetCurrentEvents() {
+        mapper.addEvent(currentEvent);
+        addProgress(currentEvent.getId(), 20, 20, someday);
+        addProgress(currentEvent.getId(), 10, 10, today);
+        List<Event> events = mapper.getCurrentEvents();
+        Event event = events.get(events.size() - 1);
+        assertEquals(today.toString(), event.getProgressList().get(0).getDate().toString());
     }
 
     @Test

@@ -19,6 +19,16 @@ public class EventBean {
     @NotNull
     private Integer type;
 
+    public static EventBean getFromEvent(Event event) {
+        EventBean eventBean = new EventBean();
+        eventBean.setId(event.getId());
+        eventBean.setName(event.getName());
+        eventBean.setStartDate(event.getStartDate());
+        eventBean.setTargetProgress(event.getTargetProgress());
+        eventBean.setType(event.getType());
+        return eventBean;
+    }
+
     public int getId() {
         return id;
     }
@@ -57,15 +67,5 @@ public class EventBean {
 
     public void setType(Integer type) {
         this.type = type;
-    }
-
-    public static EventBean getFromEvent(Event event) {
-        EventBean eventBean = new EventBean();
-        eventBean.setId(event.getId());
-        eventBean.setName(event.getName());
-        eventBean.setStartDate(event.getStartDate());
-        eventBean.setTargetProgress(event.getTargetProgress());
-        eventBean.setType(event.getType());
-        return eventBean;
     }
 }

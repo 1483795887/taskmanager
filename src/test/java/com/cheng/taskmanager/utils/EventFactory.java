@@ -30,7 +30,7 @@ public class EventFactory {
         return eventToAdd;
     }
 
-    public static void addProgress(Event event, int p, int r, Date date){
+    public static void addProgress(Event event, int p, int r, Date date) {
         Progress progress = new Progress();
         progress.setRecord(r);
         progress.setDate(date);
