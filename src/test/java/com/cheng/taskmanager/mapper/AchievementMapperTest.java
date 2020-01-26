@@ -98,14 +98,4 @@ public class AchievementMapperTest {
         assertEquals(achievements.get(0).getDate().toString(), oldday.toString());
     }
 
-    @Test
-    @Transactional
-    public void shouldAddWhenThisEventIsAdded() {
-        Achievement achievement = addAchievement(someday);
-        int count = mapper.getAchievementCount(someday, today);
-        achievement.setDate(today);
-        mapper.addAchievement(achievement);
-        assertEquals(count, mapper.getAchievementCount(someday, today));
-
-    }
 }

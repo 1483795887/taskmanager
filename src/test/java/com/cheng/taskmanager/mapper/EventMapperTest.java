@@ -287,6 +287,13 @@ public class EventMapperTest {
         int count = mapper.getProgresses(middleday1, today).size();
         addTestProgresses();
         assertEquals(count + 2, mapper.getProgresses(middleday1, today).size());
+    }
 
+    @Test
+    @Transactional
+    public void shouldBeOrderedWhenGetProgresses(){
+        addTestProgresses();
+        Progress progress = mapper.getProgresses(oldday, today).get(0);
+        assertEquals(today.toString(), progress.getDate().toString());
     }
 }

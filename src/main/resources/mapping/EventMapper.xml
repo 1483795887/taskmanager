@@ -41,6 +41,7 @@
         select *
         from progress
         where date between #{startDate} and #{endDate}
+        order by date desc
     </select>
 
     <insert id="addEvent" parameterType="Event" useGeneratedKeys="true" keyProperty="id">

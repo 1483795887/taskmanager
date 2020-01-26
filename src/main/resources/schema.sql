@@ -24,7 +24,7 @@ CREATE TABLE progress
 );
 
 create table achievement (
-  eid  int primary key,
+  eid  int key,
   date date,
   constraint achievement_event_id_fk foreign key (eid) references event (id)
 );

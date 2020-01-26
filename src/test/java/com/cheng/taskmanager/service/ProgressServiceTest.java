@@ -46,6 +46,15 @@ public class ProgressServiceTest {
         event.setProgressList(progresses);
     }
 
+    private Event getEvent(int type){
+        Event event = EventFactory.getCurrentEvent(type);
+        event.setProgressList(new ArrayList<>());
+        event.setId(TEST_EVENT_ID);
+        addProgress(event, 10, 10, someday);
+        addProgress(event, 20, 10, today);
+        return event;
+    }
+
     @Before
     public void setUp() {
         eventMapper = mock(EventMapper.class);
@@ -57,11 +66,7 @@ public class ProgressServiceTest {
         startDateCap = ArgumentCaptor.forClass(Date.class);
         endDateCap = ArgumentCaptor.forClass(Date.class);
 
-        event = EventFactory.getCurrentEvent(Event.BOOK);
-        event.setId(TEST_EVENT_ID);
-        event.setProgressList(new ArrayList<>());
-        addProgress(event, 10, 10, someday);
-        addProgress(event, 20, 10, today);
+        event = getEvent(Event.BOOK);
     }
 
     @Test
