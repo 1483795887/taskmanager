@@ -125,10 +125,6 @@ public class ProgressServiceTest {
         List<EventInfo> eventInfos = service.getProgresses(
                 someday, today, Event.ALL);
         assertEquals(eventInfos.size(), 8);
-        for (EventInfo eventInfo : eventInfos) {
-            EventBean event = eventInfo.getEvent();
-            assertNotEquals(event.getType(), Event.CARD);
-        }
     }
 
     @Test
