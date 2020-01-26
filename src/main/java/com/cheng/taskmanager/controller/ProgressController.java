@@ -2,7 +2,7 @@ package com.cheng.taskmanager.controller;
 
 import com.cheng.taskmanager.bean.DateAndTypeBean;
 import com.cheng.taskmanager.bean.EventInfo;
-import com.cheng.taskmanager.bean.ResultBean;
+import com.cheng.taskmanager.bean.ResultMap;
 import com.cheng.taskmanager.service.ProgressService;
 import com.cheng.taskmanager.utils.EventInfoSummer;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,9 +13,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping(value = "/progress", method = RequestMethod.POST)
@@ -32,27 +30,19 @@ public class ProgressController {
         this.progressService = progressService;
     }
 
-    private void addResultSuccess(Map<String, Object> map) {
-        map.put(RESULT, ResultBean.succeed);
-    }
-
-    private void addResultParamError(Map<String, Object> map) {
-        map.put(RESULT, ResultBean.paramError);
-    }
-
     @RequestMapping("/getProgresses")
-    public Map<String, Object> addEvent(@RequestBody @Valid DateAndTypeBean bean,
-                                        BindingResult bindingResult) {
-        Map<String, Object> map = new HashMap<>();
+    public ResultMap addEvent(@RequestBody @Valid DateAndTypeBean bean,
+                              BindingResult bindingResult) {
+        ResultMap map = new ResultMap();
         if (bindingResult.hasErrors()) {
-            addResultParamError(map);
+            map.addResultParamError();
         } else {
             List<EventInfo> progressList =
                     progressService.getProgresses(
                             bean.getStartDate(),
                             bean.getEndDate(),
                             bean.getType());
-            addResultSuccess(map);
+            map.addResultSuccess();
             map.put(INFOS, progressList);
             map.put(SUM, EventInfoSummer.getSumRecord(progressList));
         }
