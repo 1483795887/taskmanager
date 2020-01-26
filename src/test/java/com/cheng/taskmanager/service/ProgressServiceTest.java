@@ -16,8 +16,7 @@ import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -30,6 +29,8 @@ public class ProgressServiceTest {
     private Date someday;
     private Date today;
     private ArgumentCaptor<Date> startDateCap, endDateCap;
+
+    private List<Progress> progressList;
 
     private Event event;
 
@@ -44,12 +45,14 @@ public class ProgressServiceTest {
         progresses.add(progress);
         progresses.addAll(event.getProgressList());
         event.setProgressList(progresses);
+
+        progressList.add(progress);
     }
 
-    private Event getEvent(int type){
+    private Event getEvent(int id, int type) {
         Event event = EventFactory.getCurrentEvent(type);
         event.setProgressList(new ArrayList<>());
-        event.setId(TEST_EVENT_ID);
+        event.setId(id);
         addProgress(event, 10, 10, someday);
         addProgress(event, 20, 10, today);
         return event;
@@ -66,20 +69,23 @@ public class ProgressServiceTest {
         startDateCap = ArgumentCaptor.forClass(Date.class);
         endDateCap = ArgumentCaptor.forClass(Date.class);
 
-        event = getEvent(Event.BOOK);
+        progressList = new ArrayList<>();
+        event = getEvent(TEST_EVENT_ID, Event.BOOK);
     }
 
     @Test
     public void shouldCallRightWhenGetProgresses() {
-        List<EventInfo> eventInfos = service.getProgresses(someday, today);
+        List<EventInfo> eventInfos = service.getProgresses(
+                someday, today, Event.ALL);
         verify(eventMapper).getProgresses(any(Date.class), any(Date.class));
         assertNotNull(eventInfos);
     }
 
     @Test
     public void shouldExchangeDatesWhenDateIsOpposite() {
-        service.getProgresses(today, someday);
-        verify(eventMapper).getProgresses(startDateCap.capture(), endDateCap.capture());
+        service.getProgresses(today, someday, Event.ALL);
+        verify(eventMapper).getProgresses(
+                startDateCap.capture(), endDateCap.capture());
         Date startDate = startDateCap.getValue();
         Date endDate = endDateCap.getValue();
         assertEquals(startDate.toString(), someday.toString());
@@ -92,12 +98,47 @@ public class ProgressServiceTest {
                 any(Date.class), any(Date.class))).
                 thenReturn(event.getProgressList());
         when(eventMapper.getEventById(anyInt())).thenReturn(event);
-        List<EventInfo> infos = service.getProgresses(someday, today);
+        List<EventInfo> infos = service.getProgresses(someday, today, Event.ALL);
         EventInfo info = infos.get(0);
         EventBean bean = info.getEvent();
         Progress expectProgress = event.getProgressList().get(0);
         assertEquals(bean.getName(), event.getName());
         assertEquals(info.getProgress().getProgress(), expectProgress.getProgress());
         assertEquals(info.getProgress().getRecord(), expectProgress.getRecord());
+    }
+
+    private void addTestDataForType() {
+        Event event = getEvent(TEST_EVENT_ID, Event.BOOK);
+        when(eventMapper.getEventById(TEST_EVENT_ID)).thenReturn(event);
+        Event event1 = getEvent(TEST_EVENT_ID + 1, Event.BOOK);
+        when(eventMapper.getEventById(TEST_EVENT_ID + 1)).thenReturn(event1);
+        Event event2 = getEvent(TEST_EVENT_ID + 2, Event.ANIM);
+        when(eventMapper.getEventById(TEST_EVENT_ID + 2)).thenReturn(event2);
+
+        when(eventMapper.getProgresses(
+                any(Date.class), any(Date.class))).thenReturn(progressList);
+    }
+
+    @Test
+    public void shouldGetAllWhenTypeIsAll() {
+        addTestDataForType();
+        List<EventInfo> eventInfos = service.getProgresses(
+                someday, today, Event.ALL);
+        assertEquals(eventInfos.size(), 8);
+        for (EventInfo eventInfo : eventInfos) {
+            EventBean event = eventInfo.getEvent();
+            assertNotEquals(event.getType(), Event.CARD);
+        }
+    }
+
+    @Test
+    public void shouldGetExactTypeWhenAssignedType() {
+        addTestDataForType();
+        List<EventInfo> eventInfos = service.getProgresses(
+                someday, today, Event.ANIM);
+        assertEquals(eventInfos.size(), 2);
+        for (EventInfo eventInfo : eventInfos) {
+            assertEquals(eventInfo.getEvent().getType(), Event.ANIM);
+        }
     }
 }

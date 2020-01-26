@@ -6,5 +6,5 @@ import java.sql.Date;
 import java.util.List;
 
 public interface ProgressService {
-    List<EventInfo> getProgresses(Date startDate, Date endDate);
+    List<EventInfo> getProgresses(Date startDate, Date endDate, int type);
 }

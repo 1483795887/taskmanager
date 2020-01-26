@@ -24,7 +24,7 @@ public class ProgressServiceImpl implements ProgressService {
     }
 
     @Override
-    public List<EventInfo> getProgresses(Date startDate, Date endDate) {
+    public List<EventInfo> getProgresses(Date startDate, Date endDate, int type) {
         if (startDate.after(endDate)) {   ///如果时间顺序相反则交换顺序
             Date temp = endDate;
             endDate = startDate;
@@ -36,6 +36,8 @@ public class ProgressServiceImpl implements ProgressService {
         for (Progress progress : progressList) {
             EventInfo info = new EventInfo();
             Event event = mapper.getEventById(progress.getEid());
+            if(type != Event.ALL && event.getType() != type)
+                continue;
             info.setEvent(EventBean.getFromEvent(event));
             info.setProgress(progress);
             infos.add(info);
