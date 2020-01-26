@@ -5,7 +5,6 @@ import com.cheng.taskmanager.entity.Achievement;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
-import java.sql.Date;
 import java.util.List;
 
 @Repository
@@ -14,6 +13,5 @@ public interface AchievementMapper {
 
     void addAchievement(Achievement achievement);
 
-    int getAchievementCount(@Param("startDate") Date startDate,
-                            @Param("endDate") Date endDate);
+    int getAchievementCount(@Param("region") DateRegion region);
 }

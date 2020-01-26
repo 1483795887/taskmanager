@@ -12,7 +12,7 @@
     <select id="getAchievementCount" resultType="int">
         select count(*)
         from achievement
-        where date between #{startDate} and #{endDate}
+        where date between #{region.startDate} and #{region.endDate}
     </select>
     <insert id="addAchievement" parameterType="Achievement">
         insert into achievement (eid, date)

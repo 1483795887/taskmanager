@@ -66,12 +66,19 @@ public class AchievementMapperTest {
         assertNotNull(getAchievements(someday, someday));
     }
 
+    private int getAchievementCount(Date start, Date end) {
+        DateRegion region = new DateRegion();
+        region.setStartDate(start);
+        region.setEndDate(end);
+        return mapper.getAchievementCount(region);
+    }
+
     @Test
     @Transactional
     public void shouldCountIncWhenAddAchievement() {
-        int count = mapper.getAchievementCount(someday, someday);
+        int count = getAchievementCount(someday, someday);
         addAchievement(someday);
-        assertEquals(count + 1, mapper.getAchievementCount(someday, someday));
+        assertEquals(count + 1, getAchievementCount(someday, someday));
     }
 
 
@@ -86,7 +93,7 @@ public class AchievementMapperTest {
     public void shouldCountBeRightWhenAtBottomLine() {
         addTestDateDates();
         List<Achievement> achievements = getAchievements(oldday, middleday1);
-        assertEquals(mapper.getAchievementCount(oldday, middleday1), 1);
+        assertEquals(getAchievementCount(oldday, middleday1), 1);
         assertEquals(achievements.size(), 1);
     }
 
@@ -95,7 +102,7 @@ public class AchievementMapperTest {
     public void shouldCountBeRightWhenAtUpperLine() {
         addTestDateDates();
         List<Achievement> achievements = getAchievements(middleday1, today);
-        assertEquals(mapper.getAchievementCount(middleday1, today), 2);
+        assertEquals(getAchievementCount(middleday1, today), 2);
         assertEquals(achievements.size(), 2);
     }
 
