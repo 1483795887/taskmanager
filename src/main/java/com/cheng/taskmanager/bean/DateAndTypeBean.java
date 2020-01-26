@@ -3,7 +3,7 @@ package com.cheng.taskmanager.bean;
 import javax.validation.constraints.NotNull;
 import java.sql.Date;
 
-public class GetProgressBean {
+public class DateAndTypeBean {
     @NotNull
     private Date startDate;
     @NotNull

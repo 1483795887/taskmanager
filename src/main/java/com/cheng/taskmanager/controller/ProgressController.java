@@ -1,9 +1,10 @@
 package com.cheng.taskmanager.controller;
 
+import com.cheng.taskmanager.bean.DateAndTypeBean;
 import com.cheng.taskmanager.bean.EventInfo;
-import com.cheng.taskmanager.bean.GetProgressBean;
 import com.cheng.taskmanager.bean.ResultBean;
 import com.cheng.taskmanager.service.ProgressService;
+import com.cheng.taskmanager.utils.EventInfoSummer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,7 +22,7 @@ import java.util.Map;
 public class ProgressController {
 
     private final static String RESULT = "result";
-    private final static String PROGRESSES = "progresses";
+    private final static String INFOS = "infos";
     private final static String SUM = "sum";
 
     private ProgressService progressService;
@@ -40,7 +41,7 @@ public class ProgressController {
     }
 
     @RequestMapping("/getProgresses")
-    public Map<String, Object> addEvent(@RequestBody @Valid GetProgressBean bean,
+    public Map<String, Object> addEvent(@RequestBody @Valid DateAndTypeBean bean,
                                         BindingResult bindingResult) {
         Map<String, Object> map = new HashMap<>();
         if (bindingResult.hasErrors()) {
@@ -52,8 +53,8 @@ public class ProgressController {
                             bean.getEndDate(),
                             bean.getType());
             addResultSuccess(map);
-            map.put(PROGRESSES, progressList);
-            map.put(SUM, progressService.getSumRecord(progressList));
+            map.put(INFOS, progressList);
+            map.put(SUM, EventInfoSummer.getSumRecord(progressList));
         }
         return map;
     }

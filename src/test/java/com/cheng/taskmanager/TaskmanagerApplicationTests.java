@@ -1,5 +1,6 @@
 package com.cheng.taskmanager;
 
+import com.cheng.taskmanager.controller.AchievementControllerTest;
 import com.cheng.taskmanager.controller.EventControllerTest;
 import com.cheng.taskmanager.controller.ProgressControllerTest;
 import com.cheng.taskmanager.mapper.AchievementMapperTest;
@@ -19,7 +20,8 @@ import org.springframework.boot.test.context.SpringBootTest;
         ProgressServiceTest.class,
         AchievementServiceTest.class,
         EventControllerTest.class,
-        ProgressControllerTest.class
+        ProgressControllerTest.class,
+        AchievementControllerTest.class
 })
 @SpringBootTest
 public class TaskmanagerApplicationTests {

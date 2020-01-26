@@ -16,7 +16,8 @@ import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -136,24 +137,5 @@ public class ProgressServiceTest {
         for (EventInfo eventInfo : eventInfos) {
             assertEquals(eventInfo.getEvent().getType(), Event.ANIM);
         }
-    }
-
-    @Test
-    public void shouldSumBeRightWhenGetSumRecord() {
-        List<EventInfo> eventInfos = new ArrayList<>();
-        EventInfo info = new EventInfo();
-        Progress progress = new Progress();
-        progress.setRecord(10);
-        info.setProgress(progress);
-        eventInfos.add(info);
-
-        EventInfo info1 = new EventInfo();
-        Progress progress1 = new Progress();
-        progress1.setRecord(20);
-        info1.setProgress(progress1);
-        eventInfos.add(info1);
-
-        int sum = service.getSumRecord(eventInfos);
-        assertEquals(30, sum);
     }
 }
