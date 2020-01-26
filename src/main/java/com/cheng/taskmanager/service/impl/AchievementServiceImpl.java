@@ -1,6 +1,7 @@
 package com.cheng.taskmanager.service.impl;
 
 import com.cheng.taskmanager.bean.DateAndTypeBean;
+import com.cheng.taskmanager.bean.DateRegion;
 import com.cheng.taskmanager.bean.EventBean;
 import com.cheng.taskmanager.bean.EventInfo;
 import com.cheng.taskmanager.entity.Achievement;
@@ -33,12 +34,11 @@ public class AchievementServiceImpl implements AchievementService {
         Date startDate = inputBean.getStartDate();
         Date endDate = inputBean.getEndDate();
         int type = inputBean.getType();
-        if (startDate.after(endDate)) {
-            Date temp = endDate;
-            endDate = startDate;
-            startDate = temp;
-        }
-        List<Achievement> achievementList = achievementMapper.getAchievements(startDate, endDate);
+        DateRegion region = new DateRegion();
+        region.setStartDate(startDate);
+        region.setEndDate(endDate);
+        region.checkOrder();
+        List<Achievement> achievementList = achievementMapper.getAchievements(region);
         List<EventInfo> eventInfoList = new ArrayList<>();
         for (Achievement achievement : achievementList) {
             Event event = eventMapper.getEventById(achievement.getEid());

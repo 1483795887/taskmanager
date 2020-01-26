@@ -1,6 +1,7 @@
 package com.cheng.taskmanager.service;
 
 import com.cheng.taskmanager.bean.DateAndTypeBean;
+import com.cheng.taskmanager.bean.DateRegion;
 import com.cheng.taskmanager.bean.EventBean;
 import com.cheng.taskmanager.bean.EventInfo;
 import com.cheng.taskmanager.entity.Achievement;
@@ -12,7 +13,6 @@ import com.cheng.taskmanager.utils.DateFactory;
 import com.cheng.taskmanager.utils.EventFactory;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.ArgumentCaptor;
 
 import java.sql.Date;
 import java.util.ArrayList;
@@ -33,6 +33,7 @@ public class AchievementServiceTest {
     private AchievementService service;
     private Date someday;
     private Date today;
+    private DateRegion region;
 
     private DateAndTypeBean inputBean;
 
@@ -60,33 +61,29 @@ public class AchievementServiceTest {
         achievementList = new ArrayList<>();
 
         inputBean = new DateAndTypeBean(someday, today, Event.ALL);
+
+        region = new DateRegion();
+        region.setStartDate(someday);
+        region.setEndDate(today);
     }
 
     @Test
     public void shouldCallRightWhenGetAchievements() {
         List<EventInfo> eventInfoList = service.getAchievements(inputBean);
-        ArgumentCaptor<Date> startArg, endArg;
-        startArg = ArgumentCaptor.forClass(Date.class);
-        endArg = ArgumentCaptor.forClass(Date.class);
-        verify(achievementMapper).getAchievements(startArg.capture(), endArg.capture());
-        Date startDate = startArg.getValue();
-        Date endDate = endArg.getValue();
-        assertEquals(someday.toString(), startDate.toString());
-        assertEquals(today.toString(), endDate.toString());
+        verify(achievementMapper).getAchievements(region);
         assertNotNull(eventInfoList);
     }
 
     @Test
     public void shouldExchangeDateWhenEndBeforeStart() {
         service.getAchievements(inputBean);
-        verify(achievementMapper).getAchievements(someday, today);
+        verify(achievementMapper).getAchievements(region);
     }
 
     @Test
     public void shouldResultRightWhenGetAchievements() {
         Event event = addAchievement(TEST_EVENT_ID, Event.GAME);
-        when(achievementMapper.getAchievements(
-                any(Date.class), any(Date.class))).
+        when(achievementMapper.getAchievements(any(DateRegion.class))).
                 thenReturn(achievementList);
         when(eventMapper.getEventById(anyInt())).thenReturn(event);
         List<EventInfo> infos = service.getAchievements(
@@ -125,7 +122,7 @@ public class AchievementServiceTest {
     @Test
     public void shouldSelectAllWhenGetAll() {
         addTestDataForType();
-        when(achievementMapper.getAchievements(someday, today)).thenReturn(achievementList);
+        when(achievementMapper.getAchievements(region)).thenReturn(achievementList);
         List<EventInfo> eventInfoList = service.getAchievements(inputBean);
         assertEquals(eventInfoList.size(), 14);
     }
@@ -133,7 +130,7 @@ public class AchievementServiceTest {
     @Test
     public void shouldSelectExactTypeWhenGetAchievements() {
         addTestDataForType();
-        when(achievementMapper.getAchievements(someday, today)).thenReturn(achievementList);
+        when(achievementMapper.getAchievements(region)).thenReturn(achievementList);
         inputBean.setType(Event.LEGACY);
         List<EventInfo> eventInfoList = service.getAchievements(inputBean);
         assertEquals(eventInfoList.size(), 2);

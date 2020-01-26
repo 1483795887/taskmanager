@@ -1,5 +1,6 @@
 package com.cheng.taskmanager.mapper;
 
+import com.cheng.taskmanager.bean.DateRegion;
 import com.cheng.taskmanager.entity.Achievement;
 import com.cheng.taskmanager.entity.Event;
 import com.cheng.taskmanager.utils.DateFactory;
@@ -32,6 +33,8 @@ public class AchievementMapperTest {
     private Date someday;
     private Date today;
 
+    private DateRegion region;
+
     @Before
     public void setUp() {
         oldday = DateFactory.getDateFromString("2020-01-05");
@@ -50,10 +53,17 @@ public class AchievementMapperTest {
         return achievement;
     }
 
+    private List<Achievement> getAchievements(Date start, Date end) {
+        DateRegion region = new DateRegion();
+        region.setStartDate(start);
+        region.setEndDate(end);
+        return mapper.getAchievements(region);
+    }
+
     @Test
     @Transactional
     public void shouldNotNullWhenGetAchievements() {
-        assertNotNull(mapper.getAchievements(someday, someday));
+        assertNotNull(getAchievements(someday, someday));
     }
 
     @Test
@@ -75,7 +85,7 @@ public class AchievementMapperTest {
     @Transactional
     public void shouldCountBeRightWhenAtBottomLine() {
         addTestDateDates();
-        List<Achievement> achievements = mapper.getAchievements(oldday, middleday1);
+        List<Achievement> achievements = getAchievements(oldday, middleday1);
         assertEquals(mapper.getAchievementCount(oldday, middleday1), 1);
         assertEquals(achievements.size(), 1);
     }
@@ -84,7 +94,7 @@ public class AchievementMapperTest {
     @Transactional
     public void shouldCountBeRightWhenAtUpperLine() {
         addTestDateDates();
-        List<Achievement> achievements = mapper.getAchievements(middleday1, today);
+        List<Achievement> achievements = getAchievements(middleday1, today);
         assertEquals(mapper.getAchievementCount(middleday1, today), 2);
         assertEquals(achievements.size(), 2);
     }
@@ -94,7 +104,7 @@ public class AchievementMapperTest {
     public void shouldOrderBeRightWhenGetAchievements() {
         addAchievement(today);
         addAchievement(oldday);
-        List<Achievement> achievements = mapper.getAchievements(oldday, today);
+        List<Achievement> achievements = getAchievements(oldday, today);
         assertEquals(achievements.get(0).getDate().toString(), oldday.toString());
     }
 

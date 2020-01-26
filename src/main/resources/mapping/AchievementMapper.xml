@@ -6,7 +6,7 @@
     <select id="getAchievements" resultType="Achievement">
         select *
         from achievement
-        where date between #{startDate} and #{endDate}
+        where date between #{region.startDate} and #{region.endDate}
         order by date asc
     </select>
     <select id="getAchievementCount" resultType="int">
