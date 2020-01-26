@@ -7,8 +7,8 @@ public class Event {
     public final static int ALL = 0;
     public final static int BOOK = 1;
     public final static int ANIM = 2;
-    /*public final static int GAME = 3;
-    public final static int LEGACY = 100;*/
+    public final static int GAME = 3;
+    public final static int LEGACY = 100;
     public final static int CARD = 1000;
 
     private Integer id;
