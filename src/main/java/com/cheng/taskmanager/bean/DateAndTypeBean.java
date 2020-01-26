@@ -11,6 +11,15 @@ public class DateAndTypeBean {
     @NotNull
     private Integer type;
 
+    public DateAndTypeBean() {
+    }
+
+    public DateAndTypeBean(Date startDate, Date endDate, Integer type) {
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.type = type;
+    }
+
     public Date getStartDate() {
         return startDate;
     }
@@ -33,5 +42,15 @@ public class DateAndTypeBean {
 
     public void setType(Integer type) {
         this.type = type;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof DateAndTypeBean))
+            return false;
+        DateAndTypeBean bean = (DateAndTypeBean) obj;
+        return endDate.toString().equals(bean.getEndDate().toString()) &&
+                startDate.toString().equals(bean.getStartDate().toString()) &&
+                type.equals(bean.getType());
     }
 }

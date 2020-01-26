@@ -38,7 +38,7 @@ public class AchievementController {
         } else {
             map.addResultSuccess();
             List<EventInfo> eventInfoList =
-                    service.getAchievements(bean.getStartDate(), bean.getEndDate(), bean.getType());
+                    service.getAchievements(bean);
             map.put(INFOS, eventInfoList);
             map.put(SUM, EventInfoSummer.getSumRecord(eventInfoList));
         }

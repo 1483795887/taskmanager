@@ -25,8 +25,6 @@ import java.util.List;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -51,6 +49,7 @@ public class AchievementControllerTest {
         searchBean.setStartDate(today);
         searchBean.setEndDate(today);
         searchBean.setType(Event.BOOK);
+
     }
 
     @Test
@@ -88,11 +87,11 @@ public class AchievementControllerTest {
             eventInfos.add(eventInfo);
         }
 
-        when(service.getAchievements(any(Date.class), any(Date.class), anyInt()))
+        when(service.getAchievements(searchBean))
                 .thenReturn(eventInfos);
 
         JSONObject map = helper.postDate(GET_ACHIEVEMENTS, searchBean);
-        verify(service).getAchievements(today, today, Event.BOOK);
+        verify(service).getAchievements(searchBean);
         EventInfo[] infos = map.getJSONArray("infos")
                 .toJavaObject(EventInfo[].class);
         Assertions.assertNotNull(infos);
