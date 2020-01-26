@@ -7,5 +7,6 @@ import java.util.List;
 
 public interface ProgressService {
     List<EventInfo> getProgresses(Date startDate, Date endDate, int type);
+
     int getSumRecord(List<EventInfo> eventInfos);
 }

@@ -291,7 +291,7 @@ public class EventMapperTest {
 
     @Test
     @Transactional
-    public void shouldBeOrderedWhenGetProgresses(){
+    public void shouldBeOrderedWhenGetProgresses() {
         addTestProgresses();
         Progress progress = mapper.getProgresses(oldday, today).get(0);
         assertEquals(today.toString(), progress.getDate().toString());

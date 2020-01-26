@@ -36,7 +36,7 @@ public class ProgressServiceImpl implements ProgressService {
         for (Progress progress : progressList) {
             EventInfo info = new EventInfo();
             Event event = mapper.getEventById(progress.getEid());
-            if(type != Event.ALL && event.getType() != type)
+            if (type != Event.ALL && event.getType() != type)
                 continue;
             info.setEvent(EventBean.getFromEvent(event));
             info.setProgress(progress);
@@ -49,7 +49,7 @@ public class ProgressServiceImpl implements ProgressService {
     @Override
     public int getSumRecord(List<EventInfo> eventInfos) {
         int sum = 0;
-        for(EventInfo eventInfo : eventInfos){
+        for (EventInfo eventInfo : eventInfos) {
             sum += eventInfo.getProgress().getRecord();
         }
         return sum;
