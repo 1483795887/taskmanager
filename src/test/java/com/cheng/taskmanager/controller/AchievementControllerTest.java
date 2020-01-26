@@ -45,11 +45,7 @@ public class AchievementControllerTest {
         helper = new PostHelper(context);
         today = DateFactory.getToday();
 
-        searchBean = new DateAndTypeBean();
-        searchBean.setStartDate(today);
-        searchBean.setEndDate(today);
-        searchBean.setType(Event.BOOK);
-
+        searchBean = new DateAndTypeBean(today, today, Event.BOOK);
     }
 
     @Test
@@ -59,13 +55,13 @@ public class AchievementControllerTest {
 
     @Test
     public void shouldFailWhenStartDateIsNull() throws Exception {
-        searchBean.setStartDate(null);
+        searchBean.getRegion().setStartDate(null);
         helper.checkFailed(GET_ACHIEVEMENTS, searchBean);
     }
 
     @Test
     public void shouldFailWhenEndDateIsNull() throws Exception {
-        searchBean.setEndDate(null);
+        searchBean.getRegion().setEndDate(null);
         helper.checkFailed(GET_ACHIEVEMENTS, searchBean);
     }
 

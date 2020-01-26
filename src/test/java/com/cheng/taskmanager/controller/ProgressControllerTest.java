@@ -45,10 +45,7 @@ public class ProgressControllerTest {
         helper = new PostHelper(context);
         today = DateFactory.getToday();
 
-        progressBean = new DateAndTypeBean();
-        progressBean.setStartDate(today);
-        progressBean.setEndDate(today);
-        progressBean.setType(Event.BOOK);
+        progressBean = new DateAndTypeBean(today, today, Event.BOOK);
     }
 
     @Test
@@ -58,13 +55,13 @@ public class ProgressControllerTest {
 
     @Test
     public void shouldFailWhenStartDateIsNull() throws Exception {
-        progressBean.setStartDate(null);
+        progressBean.getRegion().setStartDate(null);
         helper.checkFailed(GET_PROGRESSES, progressBean);
     }
 
     @Test
     public void shouldFailWhenEndDateIsNull() throws Exception {
-        progressBean.setEndDate(null);
+        progressBean.getRegion().setEndDate(null);
         helper.checkFailed(GET_PROGRESSES, progressBean);
     }
 

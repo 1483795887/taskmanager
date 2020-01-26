@@ -13,7 +13,6 @@ import com.cheng.taskmanager.service.AchievementService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,12 +30,8 @@ public class AchievementServiceImpl implements AchievementService {
 
     @Override
     public List<EventInfo> getAchievements(DateAndTypeBean inputBean) {
-        Date startDate = inputBean.getStartDate();
-        Date endDate = inputBean.getEndDate();
         int type = inputBean.getType();
-        DateRegion region = new DateRegion();
-        region.setStartDate(startDate);
-        region.setEndDate(endDate);
+        DateRegion region = inputBean.getRegion();
         region.checkOrder();
         List<Achievement> achievementList = achievementMapper.getAchievements(region);
         List<EventInfo> eventInfoList = new ArrayList<>();

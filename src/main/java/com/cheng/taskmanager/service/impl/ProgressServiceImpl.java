@@ -11,7 +11,6 @@ import com.cheng.taskmanager.service.ProgressService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,10 +26,8 @@ public class ProgressServiceImpl implements ProgressService {
 
     @Override
     public List<EventInfo> getProgresses(DateAndTypeBean inputBean) {
-        Date startDate = inputBean.getStartDate();
-        Date endDate = inputBean.getEndDate();
         int type = inputBean.getType();
-        DateRegion region = new DateRegion(startDate, endDate);
+        DateRegion region = inputBean.getRegion();
         region.checkOrder();
         List<Progress> progressList = mapper.getProgresses(region);
         List<EventInfo> infos = new ArrayList<>();

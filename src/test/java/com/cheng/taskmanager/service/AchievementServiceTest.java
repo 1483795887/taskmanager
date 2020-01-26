@@ -76,9 +76,7 @@ public class AchievementServiceTest {
 
     @Test
     public void shouldExchangeDateWhenEndBeforeStart() {
-        inputBean.setStartDate(today);
-        inputBean.setEndDate(someday);
-        service.getAchievements(inputBean);
+        service.getAchievements(new DateAndTypeBean(today, someday, Event.ALL));
         verify(achievementMapper).getAchievements(region);
     }
 
