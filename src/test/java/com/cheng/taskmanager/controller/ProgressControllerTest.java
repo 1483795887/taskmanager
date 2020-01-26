@@ -25,7 +25,6 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -87,11 +86,11 @@ public class ProgressControllerTest {
             eventInfos.add(eventInfo);
         }
 
-        when(service.getProgresses(any(Date.class), any(Date.class), anyInt()))
+        when(service.getProgresses(any(DateAndTypeBean.class)))
                 .thenReturn(eventInfos);
 
         JSONObject map = helper.postDate(GET_PROGRESSES, progressBean);
-        verify(service).getProgresses(today, today, Event.BOOK);
+        verify(service).getProgresses(new DateAndTypeBean(today, today, Event.BOOK));
 
         helper.checkSucceed(map);
         EventInfo[] infos = map.getJSONArray("infos")

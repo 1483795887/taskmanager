@@ -1,5 +1,6 @@
 package com.cheng.taskmanager.service;
 
+import com.cheng.taskmanager.bean.DateAndTypeBean;
 import com.cheng.taskmanager.bean.DateRegion;
 import com.cheng.taskmanager.bean.EventBean;
 import com.cheng.taskmanager.bean.EventInfo;
@@ -11,7 +12,6 @@ import com.cheng.taskmanager.utils.DateFactory;
 import com.cheng.taskmanager.utils.EventFactory;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.ArgumentCaptor;
 
 import java.sql.Date;
 import java.util.ArrayList;
@@ -30,11 +30,13 @@ public class ProgressServiceTest {
     private ProgressService service;
     private Date someday;
     private Date today;
-    private ArgumentCaptor<Date> startDateCap, endDateCap;
 
     private List<Progress> progressList;
 
     private Event event;
+
+    private DateAndTypeBean inputBean;
+    private DateRegion region;
 
     private void addProgress(Event event, int p, int r, Date date) {
         Progress progress = new Progress();
@@ -68,25 +70,24 @@ public class ProgressServiceTest {
         someday = DateFactory.getDateFromString("2020-01-10");
         today = DateFactory.getToday();
 
-        startDateCap = ArgumentCaptor.forClass(Date.class);
-        endDateCap = ArgumentCaptor.forClass(Date.class);
-
         progressList = new ArrayList<>();
         event = getEvent(TEST_EVENT_ID, Event.BOOK);
+
+        inputBean = new DateAndTypeBean(someday, today, Event.ALL);
+        region = new DateRegion(someday, today);
     }
 
     @Test
     public void shouldCallRightWhenGetProgresses() {
-        List<EventInfo> eventInfos = service.getProgresses(
-                someday, today, Event.ALL);
+        inputBean.setType(Event.ALL);
+        List<EventInfo> eventInfos = service.getProgresses(inputBean);
         verify(eventMapper).getProgresses(any(DateRegion.class));
         assertNotNull(eventInfos);
     }
 
     @Test
     public void shouldExchangeDatesWhenDateIsOpposite() {
-        service.getProgresses(today, someday, Event.ALL);
-        DateRegion region = new DateRegion(someday, today);
+        service.getProgresses(inputBean);
         verify(eventMapper).getProgresses(region);
     }
 
@@ -95,7 +96,7 @@ public class ProgressServiceTest {
         when(eventMapper.getProgresses(any(DateRegion.class))).
                 thenReturn(event.getProgressList());
         when(eventMapper.getEventById(anyInt())).thenReturn(event);
-        List<EventInfo> infos = service.getProgresses(someday, today, Event.ALL);
+        List<EventInfo> infos = service.getProgresses(inputBean);
         EventInfo info = infos.get(0);
         EventBean bean = info.getEvent();
         Progress expectProgress = event.getProgressList().get(0);
@@ -118,16 +119,15 @@ public class ProgressServiceTest {
     @Test
     public void shouldGetAllWhenTypeIsAll() {
         addTestDataForType();
-        List<EventInfo> eventInfos = service.getProgresses(
-                someday, today, Event.ALL);
+        List<EventInfo> eventInfos = service.getProgresses(inputBean);
         assertEquals(eventInfos.size(), 8);
     }
 
     @Test
     public void shouldGetExactTypeWhenAssignedType() {
         addTestDataForType();
-        List<EventInfo> eventInfos = service.getProgresses(
-                someday, today, Event.ANIM);
+        inputBean.setType(Event.ANIM);
+        List<EventInfo> eventInfos = service.getProgresses(inputBean);
         assertEquals(eventInfos.size(), 2);
         for (EventInfo eventInfo : eventInfos) {
             assertEquals(eventInfo.getEvent().getType(), Event.ANIM);

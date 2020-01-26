@@ -18,8 +18,6 @@ import java.util.List;
 @RestController
 @RequestMapping(value = "/progress", method = RequestMethod.POST)
 public class ProgressController {
-
-    private final static String RESULT = "result";
     private final static String INFOS = "infos";
     private final static String SUM = "sum";
 
@@ -38,10 +36,7 @@ public class ProgressController {
             map.addResultParamError();
         } else {
             List<EventInfo> progressList =
-                    progressService.getProgresses(
-                            bean.getStartDate(),
-                            bean.getEndDate(),
-                            bean.getType());
+                    progressService.getProgresses(bean);
             map.addResultSuccess();
             map.put(INFOS, progressList);
             map.put(SUM, EventInfoSummer.getSumRecord(progressList));
