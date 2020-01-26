@@ -38,6 +38,8 @@ public class AchievementServiceImpl implements AchievementService {
         List<EventInfo> eventInfoList = new ArrayList<>();
         for (Achievement achievement : achievementList) {
             Event event = eventMapper.getEventById(achievement.getEid());
+            if (type != Event.ALL && type != event.getType())
+                continue;
             EventInfo info = new EventInfo();
             EventBean bean = EventBean.getFromEvent(event);
             Progress progress = new Progress();

@@ -37,6 +37,7 @@ public class AchievementServiceTest {
     private Event addAchievement(int id, int type) {
         Event event = EventFactory.getCurrentEvent(type);
         event.setId(id);
+        event.setStartDate(today);
         Achievement achievement = new Achievement();
         achievement.setEid(id);
         achievementList.add(achievement);
@@ -83,5 +84,48 @@ public class AchievementServiceTest {
         assertEquals(bean.getName(), event.getName());
         assertEquals(info.getProgress().getProgress(), event.getTargetProgress());
         assertEquals(info.getProgress().getRecord(), event.getTargetProgress());
+    }
+
+    private void addTestDataForType() {
+        int id = TEST_EVENT_ID;
+        for (int i = 0; i < 5; i++) {
+            Event event = addAchievement(id, Event.BOOK);
+            when(eventMapper.getEventById(id)).thenReturn(event);
+            id++;
+        }
+        for (int i = 0; i < 4; i++) {
+            Event event = addAchievement(id, Event.ANIM);
+            when(eventMapper.getEventById(id)).thenReturn(event);
+            id++;
+        }
+        for (int i = 0; i < 3; i++) {
+            Event event = addAchievement(id, Event.GAME);
+            when(eventMapper.getEventById(id)).thenReturn(event);
+            id++;
+        }
+        for (int i = 0; i < 2; i++) {
+            Event event = addAchievement(id, Event.LEGACY);
+            when(eventMapper.getEventById(id)).thenReturn(event);
+            id++;
+        }
+    }
+
+    @Test
+    public void shouldSelectAllWhenGetAll() {
+        addTestDataForType();
+        when(achievementMapper.getAchievements(someday, today)).thenReturn(achievementList);
+        List<EventInfo> eventInfoList = service.getAchievements(someday, today, Event.ALL);
+        assertEquals(eventInfoList.size(), 14);
+    }
+
+    @Test
+    public void shouldSelectExactTypeWhenGetAchievements() {
+        addTestDataForType();
+        when(achievementMapper.getAchievements(someday, today)).thenReturn(achievementList);
+        List<EventInfo> eventInfoList = service.getAchievements(someday, today, Event.LEGACY);
+        assertEquals(eventInfoList.size(), 2);
+        for (EventInfo eventInfo : eventInfoList) {
+            assertEquals(eventInfo.getEvent().getType(), Event.LEGACY);
+        }
     }
 }
