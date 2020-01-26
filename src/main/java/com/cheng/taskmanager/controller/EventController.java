@@ -2,7 +2,7 @@ package com.cheng.taskmanager.controller;
 
 import com.cheng.taskmanager.bean.EventBean;
 import com.cheng.taskmanager.bean.EventUpdateBean;
-import com.cheng.taskmanager.bean.ResultBean;
+import com.cheng.taskmanager.bean.ResultMap;
 import com.cheng.taskmanager.entity.Event;
 import com.cheng.taskmanager.service.EventService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,8 +14,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import java.util.HashMap;
-import java.util.Map;
 
 @RestController
 @RequestMapping(value = "/event", method = RequestMethod.POST)
@@ -31,25 +29,12 @@ public class EventController {
         this.eventService = eventService;
     }
 
-    private void addResultSuccess(Map<String, Object> map) {
-        map.put(RESULT, ResultBean.succeed);
-    }
-
-    private void addResultParamError(Map<String, Object> map) {
-        map.put(RESULT, ResultBean.paramError);
-    }
-
-    private void addResultEventNotExist(Map<String, Object> map) {
-        ResultBean bean = new ResultBean(ResultBean.FAILED, "event not exist");
-        map.put(RESULT, bean);
-    }
-
     @RequestMapping("/addEvent")
-    public Map<String, Object> addEvent(@RequestBody @Valid EventBean bean,
-                                        BindingResult bindingResult) {
-        Map<String, Object> map = new HashMap<>();
+    public ResultMap addEvent(@RequestBody @Valid EventBean bean,
+                              BindingResult bindingResult) {
+        ResultMap map = new ResultMap();
         if (bindingResult.hasErrors()) {
-            addResultParamError(map);
+            map.addResultParamError();
         } else {
             Event event = new Event();
             event.setRunning(true);
@@ -57,47 +42,47 @@ public class EventController {
             event.setTargetProgress(bean.getTargetProgress());
             event.setType(bean.getType());
             eventService.addEvent(event);
-            addResultSuccess(map);
+            map.addResultSuccess();
         }
         return map;
     }
 
     @RequestMapping("/getEvent")
-    public Map<String, Object> getEventById(@RequestBody @NotNull Integer id,
-                                            BindingResult bindingResult) {
-        Map<String, Object> map = new HashMap<>();
+    public ResultMap getEventById(@RequestBody @NotNull Integer id,
+                                  BindingResult bindingResult) {
+        ResultMap map = new ResultMap();
         if (bindingResult.hasErrors()) {
-            addResultParamError(map);
+            map.addResultParamError();
         } else {
             Event event = eventService.getEventById(id);
             if (event == null) {
-                addResultEventNotExist(map);
+                map.addFailMsg("event not exist");
                 map.put(EVENT, null);
             } else {
                 map.put(EVENT, event);
-                addResultSuccess(map);
+                map.addResultSuccess();
             }
         }
         return map;
     }
 
     @RequestMapping("/updateEvent")
-    public Map<String, Object> updateEvent(@RequestBody @Valid EventUpdateBean event,
-                                           BindingResult bindingResult) {
-        Map<String, Object> map = new HashMap<>();
+    public ResultMap updateEvent(@RequestBody @Valid EventUpdateBean event,
+                                 BindingResult bindingResult) {
+        ResultMap map = new ResultMap();
         if (bindingResult.hasErrors()) {
-            addResultParamError(map);
+            map.addResultParamError();
         } else {
             Event event1 = eventService.getEventById(event.getId());
             if (event1 == null ||
                     event.getTargetProgress() < event.getCurrentProgress()) {
-                addResultEventNotExist(map);
+                map.addFailMsg("event not exist");
             } else {
                 event1.setName(event.getName());
                 event1.setTargetProgress(event.getTargetProgress());
                 eventService.updateEvent(event1);
                 eventService.updateProgress(event.getId(), event.getCurrentProgress());
-                addResultSuccess(map);
+                map.addResultSuccess();
             }
 
         }
@@ -105,9 +90,9 @@ public class EventController {
     }
 
     @RequestMapping("/getCurrentEvents")
-    public Map<String, Object> getCurrentEvents() {
-        Map<String, Object> map = new HashMap<>();
-        addResultSuccess(map);
+    public ResultMap getCurrentEvents() {
+        ResultMap map = new ResultMap();
+        map.addResultSuccess();
         map.put(EVENTS, eventService.getCurrentEvents());
         return map;
     }

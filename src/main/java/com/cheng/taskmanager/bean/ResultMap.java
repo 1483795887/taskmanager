@@ -9,6 +9,10 @@ public class ResultMap extends HashMap<String, Object> {
         put(RESULT, ResultBean.succeed);
     }
 
+    public void addFailMsg(String msg) {
+        put(RESULT, new ResultBean(ResultBean.FAILED, msg));
+    }
+
     public void addResultParamError() {
         put(RESULT, ResultBean.paramError);
     }
