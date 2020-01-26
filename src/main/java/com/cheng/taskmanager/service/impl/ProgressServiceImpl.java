@@ -45,4 +45,13 @@ public class ProgressServiceImpl implements ProgressService {
 
         return infos;
     }
+
+    @Override
+    public int getSumRecord(List<EventInfo> eventInfos) {
+        int sum = 0;
+        for(EventInfo eventInfo : eventInfos){
+            sum += eventInfo.getProgress().getRecord();
+        }
+        return sum;
+    }
 }
