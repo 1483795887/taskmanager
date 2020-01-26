@@ -1,5 +1,6 @@
 package com.cheng.taskmanager.service.impl;
 
+import com.cheng.taskmanager.bean.DateRegion;
 import com.cheng.taskmanager.bean.EventBean;
 import com.cheng.taskmanager.bean.EventInfo;
 import com.cheng.taskmanager.entity.Event;
@@ -25,12 +26,9 @@ public class ProgressServiceImpl implements ProgressService {
 
     @Override
     public List<EventInfo> getProgresses(Date startDate, Date endDate, int type) {
-        if (startDate.after(endDate)) {   ///如果时间顺序相反则交换顺序
-            Date temp = endDate;
-            endDate = startDate;
-            startDate = temp;
-        }
-        List<Progress> progressList = mapper.getProgresses(startDate, endDate);
+        DateRegion region = new DateRegion(startDate, endDate);
+        region.checkOrder();
+        List<Progress> progressList = mapper.getProgresses(region);
         List<EventInfo> infos = new ArrayList<>();
 
         for (Progress progress : progressList) {

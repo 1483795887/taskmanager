@@ -1,5 +1,6 @@
 package com.cheng.taskmanager.mapper;
 
+import com.cheng.taskmanager.bean.DateRegion;
 import com.cheng.taskmanager.entity.Event;
 import com.cheng.taskmanager.entity.Progress;
 import com.cheng.taskmanager.utils.DateFactory;
@@ -237,28 +238,32 @@ public class EventMapperTest {
         assertEquals(afterR + beforeR, event.getProgressList().get(0).getRecord());
     }
 
+    private List<Progress> getProgresses(Date start, Date end) {
+        return mapper.getProgresses(new DateRegion(start, end));
+    }
+
     @Test
     @Transactional
     public void shouldNotBeNullWhenGetProgresses() {
-        assertNotNull(mapper.getProgresses(today, today));
+        assertNotNull(getProgresses(today, today));
     }
 
     @Test
     @Transactional
     public void shouldSomeDayCountIncWhenAddProgress() {
         mapper.addEvent(currentEvent);
-        int count = mapper.getProgresses(someday, someday).size();
+        int count = getProgresses(someday, someday).size();
         addProgress(currentEvent.getId(), 10, 10, someday);
-        assertEquals(count + 1, mapper.getProgresses(someday, someday).size());
+        assertEquals(count + 1, getProgresses(someday, someday).size());
     }
 
     @Test
     @Transactional
     public void shouldNotCountIncWhenAddProgressNotInArea() {
         mapper.addEvent(currentEvent);
-        int count = mapper.getProgresses(middleday1, someday).size();
+        int count = getProgresses(middleday1, someday).size();
         addProgress(currentEvent.getId(), 10, 10, today);
-        assertEquals(count, mapper.getProgresses(middleday1, someday).size());
+        assertEquals(count, getProgresses(middleday1, someday).size());
     }
 
     private void addTestProgresses() {
@@ -276,24 +281,24 @@ public class EventMapperTest {
     @Test
     @Transactional
     public void shouldCountRightWhenBottomLimit() {
-        int count = mapper.getProgresses(someday, middleday1).size();
+        int count = getProgresses(someday, middleday1).size();
         addTestProgresses();
-        assertEquals(count + 1, mapper.getProgresses(oldday, middleday1).size());
+        assertEquals(count + 1, getProgresses(oldday, middleday1).size());
     }
 
     @Test
     @Transactional
     public void shouldCountRightWhenUpperLimit() {
-        int count = mapper.getProgresses(middleday1, today).size();
+        int count = getProgresses(middleday1, today).size();
         addTestProgresses();
-        assertEquals(count + 2, mapper.getProgresses(middleday1, today).size());
+        assertEquals(count + 2, getProgresses(middleday1, today).size());
     }
 
     @Test
     @Transactional
     public void shouldBeOrderedWhenGetProgresses() {
         addTestProgresses();
-        Progress progress = mapper.getProgresses(oldday, today).get(0);
+        Progress progress = getProgresses(oldday, today).get(0);
         assertEquals(today.toString(), progress.getDate().toString());
     }
 }

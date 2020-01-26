@@ -1,5 +1,6 @@
 package com.cheng.taskmanager.service;
 
+import com.cheng.taskmanager.bean.DateRegion;
 import com.cheng.taskmanager.bean.EventBean;
 import com.cheng.taskmanager.bean.EventInfo;
 import com.cheng.taskmanager.entity.Event;
@@ -78,25 +79,20 @@ public class ProgressServiceTest {
     public void shouldCallRightWhenGetProgresses() {
         List<EventInfo> eventInfos = service.getProgresses(
                 someday, today, Event.ALL);
-        verify(eventMapper).getProgresses(any(Date.class), any(Date.class));
+        verify(eventMapper).getProgresses(any(DateRegion.class));
         assertNotNull(eventInfos);
     }
 
     @Test
     public void shouldExchangeDatesWhenDateIsOpposite() {
         service.getProgresses(today, someday, Event.ALL);
-        verify(eventMapper).getProgresses(
-                startDateCap.capture(), endDateCap.capture());
-        Date startDate = startDateCap.getValue();
-        Date endDate = endDateCap.getValue();
-        assertEquals(startDate.toString(), someday.toString());
-        assertEquals(endDate.toString(), today.toString());
+        DateRegion region = new DateRegion(someday, today);
+        verify(eventMapper).getProgresses(region);
     }
 
     @Test
     public void shouldResultRightWhenGetProgresses() {
-        when(eventMapper.getProgresses(
-                any(Date.class), any(Date.class))).
+        when(eventMapper.getProgresses(any(DateRegion.class))).
                 thenReturn(event.getProgressList());
         when(eventMapper.getEventById(anyInt())).thenReturn(event);
         List<EventInfo> infos = service.getProgresses(someday, today, Event.ALL);
@@ -116,8 +112,7 @@ public class ProgressServiceTest {
         Event event2 = getEvent(TEST_EVENT_ID + 2, Event.ANIM);
         when(eventMapper.getEventById(TEST_EVENT_ID + 2)).thenReturn(event2);
 
-        when(eventMapper.getProgresses(
-                any(Date.class), any(Date.class))).thenReturn(progressList);
+        when(eventMapper.getProgresses(any(DateRegion.class))).thenReturn(progressList);
     }
 
     @Test

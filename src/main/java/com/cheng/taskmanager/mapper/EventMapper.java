@@ -1,11 +1,11 @@
 package com.cheng.taskmanager.mapper;
 
+import com.cheng.taskmanager.bean.DateRegion;
 import com.cheng.taskmanager.entity.Event;
 import com.cheng.taskmanager.entity.Progress;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
-import java.sql.Date;
 import java.util.List;
 
 @Repository
@@ -24,6 +24,5 @@ public interface EventMapper {
 
     List<Event> getCurrentEvents();
 
-    List<Progress> getProgresses(@Param("startDate") Date startDate,
-                                 @Param("endDate") Date endDate);
+    List<Progress> getProgresses(@Param("region") DateRegion region);
 }

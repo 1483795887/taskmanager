@@ -40,7 +40,7 @@
     <select id="getProgresses" resultType="Progress">
         select *
         from progress
-        where date between #{startDate} and #{endDate}
+        where date between #{region.startDate} and #{region.endDate}
         order by date desc
     </select>
 
